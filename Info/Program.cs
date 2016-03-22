@@ -109,10 +109,8 @@ namespace Info
             Regex re1 = new Regex(match[1] + "</strong><span>(.*)</span>");
             MatchCollection matches1 = re1.Matches(content);
             string value1 = matches1.Count > 0 ? matches1[0].Groups[1].Value : "empty";
-            if (value1.Equals("-"))
+            if (value1.Equals("-") || value1.Equals("empty"))
             {
-                string[] list = value1.Split('—');
-
                 id.firstlevel = "";
                 id.secondlevel = "";
             }
