@@ -15,7 +15,7 @@
   <downloadAll>0</downloadAll>
   <downloadthreadnum>1</downloadthreadnum>
   <downloadAndInsert>true</downloadAndInsert>
-  <mysqlstring>Database='Test';Data Source='localhost';User Id='root';Password='admin';charset='utf8';pooling=true"</mysqlstring>
+  <mysqlstring>Database='Test';Data Source='114.215.102.172';User Id='gl';Password='gl';charset='utf8';pooling=true"</mysqlstring>
 
   <daysbefore>0</daysbefore>
 

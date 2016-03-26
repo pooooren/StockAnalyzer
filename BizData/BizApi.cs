@@ -83,9 +83,12 @@ namespace big
 
         private static List<LineData> BuildLineDataForQingyou(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<LineData> list = new List<LineData>();
+
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+        
             foreach (DataRow dr in dt.Rows)
             {
                 LineData bd = new LineData()
@@ -104,7 +107,7 @@ namespace big
 
                 list.Add(bd);
             }
-
+            
             //list.Reverse();
             return list;
         }
@@ -194,9 +197,13 @@ namespace big
 
         public static List<InfoExtData> BuildInfoExtData(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<InfoExtData> list = new List<InfoExtData>();
+
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+            
             if (dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -233,10 +240,13 @@ namespace big
 
         public static List<AnalyzeData> QueryAnalyzeStatisticsByName(string tag, int level)
         {
+            List<AnalyzeData> list = new List<AnalyzeData>();
             string sql = string.Format("select count(1) value,sum(rank) rank,name,sid,firstlevel,secondlevel from {0} where rank<{2} and tag='{1}' and level={3} group by name having value >2 order by value desc,rank asc", ANALYZE, tag, Constant.TOP, level);
             DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+
             DataTable dt = ds.Tables[0];
-            List<AnalyzeData> list = new List<AnalyzeData>();
+            
             foreach (DataRow dr in dt.Rows)
             {
                 AnalyzeData bd = new AnalyzeData()
@@ -259,10 +269,12 @@ namespace big
 
         public static List<AnalyzeData> QueryAnalyzeStatisticsByIndustry(string tag, int level)
         {
+            List<AnalyzeData> list = new List<AnalyzeData>();
             string sql = string.Format("select  count(1) value,firstlevel from {0} where rank<{2} and tag='{1}' and level={3} group by firstlevel order by value desc  limit 10", ANALYZE, tag, Constant.TOP, level);
             DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
             DataTable dt = ds.Tables[0];
-            List<AnalyzeData> list = new List<AnalyzeData>();
+            
             foreach (DataRow dr in dt.Rows)
             {
                 AnalyzeData bd = new AnalyzeData()
@@ -280,10 +292,13 @@ namespace big
 
         public static List<AnalyzeData> QueryAnalyzeData(string tag)
         {
+            List<AnalyzeData> list = new List<AnalyzeData>();
+
             string sql = string.Format("select A.sid,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate from {0} A join {4} B on B.sid=A.sid and A.rank<{2} and A.tag='{1}' and A.big=B.weight*1000 order by rank", ANALYZE, tag, Constant.TOP);
             DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
             DataTable dt = ds.Tables[0];
-            List<AnalyzeData> list = new List<AnalyzeData>();
+            
             foreach (DataRow dr in dt.Rows)
             {
                 AnalyzeData bd = new AnalyzeData()
@@ -380,9 +395,11 @@ namespace big
 
         public static List<AnalyzeData> BuildAnalyzeData(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<AnalyzeData> list = new List<AnalyzeData>();
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+            
             foreach (DataRow dr in dt.Rows)
             {
                 AnalyzeData bd = new AnalyzeData()
@@ -410,6 +427,7 @@ namespace big
         {
             string sql = string.Format("select sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where rank<{1} and tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}' and sid='{6}' order by rank", ANALYZE, Constant.TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), sid);
             DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return "----";
             DataTable dt = ds.Tables[0];
             if (dt.Rows.Count > 0)
             {
@@ -795,12 +813,13 @@ namespace big
 
         private static List<BasicData> BuildDataList(string sid, int big, DateTime start, DateTime end, string searchTag, string type)
         {
-
+            List<BasicData> list = new List<BasicData>();
             string sql = string.Format("select sum(buyshare) as buyshare,sum(buymoney) as buymoney,sum(sellshare) as sellshare,sum(sellmoney) as sellmoney,sum(totalshare) as totalshare,sum(totalmoney) as totalmoney,DATE_FORMAT(time ,'{4}') as tag,avg(close) as close,avg(open) as open,max(high) as high,min(low) as low from {0} where big={1} and time >='{2}' and time<='{3}' GROUP BY tag ORDER BY tag", sid, big, start, end, searchTag);
 
             DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
             DataTable dt = ds.Tables[0];
-            List<BasicData> list = new List<BasicData>();
+            
             double incrementalTotalShare = 0;
             double incrementalBuyShare = 0;
             double incrementalSellShare = 0;
@@ -910,7 +929,7 @@ namespace big
         {
             string sql = string.Format("select distinct firstlevel as firstlevel from {0}", INFO);
             DataSet ds = MySqlHelper.GetDataSet(sql);
-
+            if (ds == null) return null;
             DataTable dt = ds.Tables[0];
             string[] list = new string[dt.Rows.Count];
             if (ds.Tables[0].Rows.Count > 0)
@@ -957,7 +976,7 @@ namespace big
         {
             string sql = string.Format("select distinct location as location from {0} where location!=''", INFO);
             DataSet ds = MySqlHelper.GetDataSet(sql);
-
+            if (ds == null) return null;
             DataTable dt = ds.Tables[0];
             string[] list = new string[dt.Rows.Count];
             if (ds.Tables[0].Rows.Count > 0)
@@ -989,9 +1008,11 @@ namespace big
 
         public static List<InfoData> BuildInfoData(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<InfoData> list = new List<InfoData>();
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+            
             if (dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -1025,9 +1046,11 @@ namespace big
 
         public static List<BasicData> BuildBasicData(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<BasicData> list = new List<BasicData>();
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+            
 
             foreach (DataRow dr in dt.Rows)
             {
@@ -1090,9 +1113,11 @@ namespace big
 
         private static List<LineData> BuildLineData(string sql)
         {
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            DataTable dt = ds.Tables[0];
             List<LineData> list = new List<LineData>();
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+            
             foreach (DataRow dr in dt.Rows)
             {
                 LineData bd = new LineData()
@@ -1132,13 +1157,14 @@ namespace big
             }
             DataSet ds = MySqlHelper.GetDataSet(sql);
             //DataTable dt = ds.Tables[0];
-            DataTable dt = ds.Tables[0];
-            if (dt.Rows.Count == 0)
+            //DataTable dt = ds.Tables[0];
+            if (ds==null|| ds.Tables[0].Rows.Count == 0)
             {
                 //取前一天的收盘价
                 string time1 = BizCommon.ProcessSQLString(BizCommon.ParseToDate(tag).AddDays(-1));
                 string sql1 = string.Format("select  close from {0} where time='{1}' and big=0 order by id desc limit 1", sid, time1);
                 DataSet ds1 = MySqlHelper.GetDataSet(sql1);
+                if (ds == null) return "--";
                 //DataTable dt = ds.Tables[0];
                 DataTable dt1 = ds1.Tables[0];
                 if (dt1.Rows.Count == 0)
