@@ -19,9 +19,7 @@ namespace big
     }
     public class BizApi
     {
-        public static int create_table = -1;
-        public static int extract_data = -1;
-        public static int info = -1;
+
         public static string BASIC_TABLE = "basictemplate";
         public static string EXTRACT_TABLE_STATUS = "extractstatus";
         public static string CREATE_TABLE_STATUS = "createstatus";
@@ -689,7 +687,7 @@ namespace big
                 MySqlHelper.ExecuteNonQuery(sql);
                 string sql1 = string.Format("insert {0}(tablename,lastupdate) value('{1}','{2}')", CREATE_TABLE_STATUS, sid, DateTime.Now.ToString());
                 MySqlHelper.ExecuteNonQuery(sql1);
-                string sq3 = string.Format("insert {0}(sid,lastupdate)values('{1}','{2}')", EXTRACT_TABLE_STATUS, sid, DateTime.MinValue);
+                string sq3 = string.Format("insert {0}(sid,lastupdate)values('{1}','{2}')", EXTRACT_TABLE_STATUS, sid, Constant.ANALYZE_START_DATE);
                 MySqlHelper.ExecuteNonQuery(sq3);
             }
             //if (create_table == 1)
@@ -706,7 +704,7 @@ namespace big
             string sql = String.Format("delete from {0}", sid);
             MySqlHelper.ExecuteNonQuery(sql);
             Console.WriteLine("clean data :" + sid);
-            string sq3 = string.Format("update {0} set lastupdate='{2}' where sid='{1}'", EXTRACT_TABLE_STATUS, sid, DateTime.MinValue);
+            string sq3 = string.Format("update {0} set lastupdate='{2}' where sid='{1}'", EXTRACT_TABLE_STATUS, sid, Constant.ANALYZE_START_DATE);
             MySqlHelper.ExecuteNonQuery(sq3);
             Console.WriteLine("update extract date :" + sid);
         }
@@ -732,27 +730,27 @@ namespace big
         #region basicinfor
         public static void InsertInfo(InfoData id)
         {
-            if (info == -1)
-            {
-                DataSet ds = MySqlHelper.GetDataSet(String.Format("select 1 as Count from {0} where sid='{1}' ", INFO, id.sid));
-                info = ds.Tables[0].Rows.Count;
-            }
 
-            if (info == 0)
+            DataSet ds = MySqlHelper.GetDataSet(String.Format("select 1 as Count from {0} where sid='{1}' ", INFO, id.sid));
+            //如果没有表格，建立一个新表
+            if (ds == null) return;
+
+            if (ds.Tables[0].Rows.Count == 0)
             {
                 string sql =
                     string.Format("insert {0}(sid,name,lastupdate,totalshare,top10total,floatshare,top10float,list,weight,firstlevel,secondlevel,location,valid) value('{1}','{2}','{3}',{4},{5},{6},{7},'{8}',{9},'{10}','{11}','{12}',{13})", INFO, id.sid, id.name, BizCommon.ProcessSQLString(DateTime.Now), id.totalshare, id.top10total, id.floatshare, id.top10float, id.list, id.weight, id.firstlevel, id.secondlevel, id.location, id.valid);
 
                 MySqlHelper.ExecuteNonQuery(sql);
-                info = 1;
+                BizApi.CreateDataTable(id.sid);
             }
             else
             {
                 //不能更新列表
                 string sql =
-                    string.Format("update {0} set name='{2}',lastupdate='{3}',totalshare={4},top10total={5},floatshare={6},top10float={7},weight={9},firstlevel='{10}',secondlevel='{11}',location='{12}',valid={13} where sid='{1}'", INFO, id.sid, id.name, BizCommon.ProcessSQLString(DateTime.Now), id.totalshare, id.top10total, id.floatshare, id.top10float, id.weight, id.firstlevel, id.secondlevel, id.location, id.valid);
+                    string.Format("update {0} set name='{2}',lastupdate='{3}',totalshare={4},top10total={5},floatshare={6},top10float={7},weight={8},firstlevel='{9}',secondlevel='{10}',location='{11}',valid={12} where sid='{1}'", INFO, id.sid, id.name, BizCommon.ProcessSQLString(DateTime.Now), id.totalshare, id.top10total, id.floatshare, id.top10float, id.weight, id.firstlevel, id.secondlevel, id.location, id.valid);
                 MySqlHelper.ExecuteNonQuery(sql);
             }
+
         }
 
 
@@ -763,21 +761,19 @@ namespace big
             ValidateBasicData(bd);
             string sid = bd.sid;
 
-            if (extract_data == -1)
+
+            string sql = String.Format("select 1 from {0} where sid='{1}'", EXTRACT_TABLE_STATUS, sid);
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return;
+
+            if (ds.Tables[0].Rows.Count == 0)
             {
-                string sql = String.Format("select 1 from {0} where sid='{1}'", EXTRACT_TABLE_STATUS, sid);
-                DataSet ds = MySqlHelper.GetDataSet(sql);
-                extract_data = ds.Tables[0].Rows.Count;
-            }
-            if (extract_data == 0)
-            {
-                string sql = string.Format("insert {0}(sid,lastupdate)values('{1}','{2}')", EXTRACT_TABLE_STATUS, sid, bd.time);
+                sql = string.Format("insert {0}(sid,lastupdate)values('{1}','{2}')", EXTRACT_TABLE_STATUS, sid, bd.time);
                 MySqlHelper.ExecuteNonQuery(sql);
-                extract_data = 1;
             }
             else
             {
-                string sql = string.Format("update {0} set lastupdate='{2}' where sid='{1}'", EXTRACT_TABLE_STATUS, sid, bd.time);
+                sql = string.Format("update {0} set lastupdate='{2}' where sid='{1}'", EXTRACT_TABLE_STATUS, sid, bd.time);
                 MySqlHelper.ExecuteNonQuery(sql);
             }
         }
