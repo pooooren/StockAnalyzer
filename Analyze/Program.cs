@@ -38,7 +38,7 @@ namespace Analyze
             foreach (string i in list)
             {
                 start = end.AddMonths(-int.Parse(i));
-                BizApi.InsertAnalyzeData(tag, start, end);
+                BizApi.InsertAnalyzeData(tag, start, end,i);
             }
         }
     }

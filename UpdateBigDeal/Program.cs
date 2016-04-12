@@ -93,7 +93,7 @@ namespace UpdateBigDeal
                 extractlist[2] = 1000;
                 extractlist[3] = 2000;
 
-                DateTime lastupdate = DateTime.MinValue;//BizApi.QueryExtractLastUpdate(sid);
+                DateTime lastupdate = DateTime.Parse(Constant.ANALYZE_START_DATE);//BizApi.QueryExtractLastUpdate(sid);
 
                 List<BasicData> list = ReadCsvByReader(sid, date, reader, extractlist, lastupdate);
 

@@ -16,8 +16,8 @@ namespace big
         //数据库连接字符串
         //public static string Conn = "Database='Test';Data Source='localhost';User Id='root';Password='admin';charset='utf8';pooling=true";
 
-        //public static string connectionString = ConfigurationManager.AppSettings["mysqlstring"].ToString();
-        public static string connectionString = "Database='Test';Data Source='localhost';User Id='root';Password='admin';charset='utf8';pooling=true";
+        public static string connectionString = Constant.MYSQL_STRING;
+        //public static string connectionString = "Database='Test';Data Source='localhost';User Id='root';Password='admin';charset='utf8';pooling=true";
         // 用于缓存参数的HASH表
         private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
 

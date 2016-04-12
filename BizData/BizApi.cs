@@ -445,12 +445,12 @@ namespace big
 
             return hh + a;
         }
-        public static void InsertAnalyzeData(string tag, DateTime start, DateTime end)
+        public static void InsertAnalyzeData(string tag, DateTime start, DateTime end,string month)
         {
-            InsertAnalyzeDataAll(BizApi.QueryInfoAll(), tag, start, end);
+            InsertAnalyzeDataAll(BizApi.QueryInfoAll(), tag, start, end,month);
         }
 
-        public static void InsertAnalyzeDataAll(List<InfoData> id_list, string tag, DateTime start, DateTime end)
+        public static void InsertAnalyzeDataAll(List<InfoData> id_list, string tag, DateTime start, DateTime end,string month)
         {
             //List<AnalyzeData> list0 = new List<AnalyzeData>();
             List<AnalyzeData> list1 = new List<AnalyzeData>();
@@ -469,7 +469,7 @@ namespace big
             list1.Sort(new AnalyzeComparator());
             //list2.Sort(new AnalyzeComparator());
             //InsertAnalyzeData(list0, start, end, 0);
-            InsertAnalyzeData(list1, tag, start, end, Constant.ANALYZE_LEVEL);
+            InsertAnalyzeData(list1, tag, start, end, Constant.ANALYZE_LEVEL,month);
             //InsertAnalyzeData(list2, start, end, 2);
         }
 
@@ -478,7 +478,7 @@ namespace big
             string sql1 = String.Format("delete from {0} where tag='{1}' and level={2} ", ANALYZE, tag, Constant.ANALYZE_LEVEL);
             MySqlHelper.ExecuteNonQuery(sql1);
         }
-        public static void InsertAnalyzeData(List<AnalyzeData> list, string tag, DateTime start, DateTime end, int level)
+        public static void InsertAnalyzeData(List<AnalyzeData> list, string tag, DateTime start, DateTime end, int level,string month)
         {
             //int index=50;
             //List<AnalyzeData> list = ComputeAll(id_list,start, end);
@@ -493,8 +493,8 @@ namespace big
                 if (ad.value > 0)
                 {
                     string sql = String.Format(
-                    "INSERT INTO {0}(sid,value,tag,name,firstlevel,secondlevel,enddate,rank,startdate,big,level)VALUES('{1}',{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}',{10},{11})",
-                            ANALYZE, ad.sid, ad.value, tag, ad.name, ad.firstlevel, ad.secondlevel, BizCommon.ProcessSQLString(end), i, BizCommon.ProcessSQLString(start), ad.big, ad.level);
+                    "INSERT INTO {0}(sid,value,tag,name,firstlevel,secondlevel,enddate,rank,startdate,big,level,month)VALUES('{1}',{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}',{10},{11},{12})",
+                            ANALYZE, ad.sid, ad.value, tag, ad.name, ad.firstlevel, ad.secondlevel, BizCommon.ProcessSQLString(end), i, BizCommon.ProcessSQLString(start), ad.big, ad.level,month);
                     MySqlHelper.ExecuteNonQuery(sql);
                 }
             }
@@ -597,9 +597,9 @@ namespace big
 
                 AnalyzeData ad1 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), start, end);
 
-                AnalyzeData ad2 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), end, now);
+                //AnalyzeData ad2 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), end, now);
 
-                ad1.value = Math.Round(ad1.value / ad2.value, 3);
+                //ad1.value = Math.Round(ad1.value / ad2.value, 3);
                 return ad1;
             }
             catch
@@ -644,8 +644,8 @@ namespace big
                 decimal index1 = bd.high == bd.low ? 1 : bd.high - bd.low;
 
                 decimal p = ((bd.close - avg) * (bd.close - avg) + (bd.open - avg) * (bd.open - avg) + (bd.high - avg) * (bd.high - avg) + (bd.low - avg) * (bd.low - avg)) / (index1 * index1 * 4);
-                double p1 = Math.Sqrt((double)p);
-
+                //double p1 = Math.Sqrt((double)p);
+                double p1 = (double)p;
                 total_value += avg * day * (decimal)p1;
             }
 

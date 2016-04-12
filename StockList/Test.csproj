@@ -35,6 +35,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\lib\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,6 +58,10 @@
       <Project>{16a1e72d-f214-47db-a3d0-59d441bbcccd}</Project>
       <Name>Analyze</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AutoDownload\AutoDownload.csproj">
+      <Project>{aced5db1-6fd8-489b-89c7-09516a12aaca}</Project>
+      <Name>AutoDownload</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BizData\BizData.csproj">
       <Project>{66c0b860-1c77-4e05-b6bb-4343290d7f2e}</Project>
       <Name>BizData</Name>
@@ -74,6 +81,10 @@
     <ProjectReference Include="..\Import\Import.csproj">
       <Project>{34b4cec5-b675-4bb9-ad79-b5f3ef9ce8e9}</Project>
       <Name>Import</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InfoExt\InfoExt.csproj">
+      <Project>{79f0ed0e-12ad-48f2-9b28-f932eedc296d}</Project>
+      <Name>InfoExt</Name>
     </ProjectReference>
     <ProjectReference Include="..\Rest\Rest.csproj">
       <Project>{e9b9b532-23bb-4179-9163-586ac99948be}</Project>
