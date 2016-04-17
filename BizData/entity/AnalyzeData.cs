@@ -44,6 +44,8 @@ namespace big.entity
         [DataMember]
         public int big;
 
+        [DataMember]
+        public int month;
         //public decimal liutonggu;
 
         //public string location;

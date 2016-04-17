@@ -184,7 +184,7 @@ namespace Rest
                 DateTime start_date = end_date.AddMonths(o);
 
 
-                vv+= BizApi.QueryAnalyzeDataValue(sid, tag, start_date, end_date, level_val)+",";
+                vv+= BizApi.QueryAnalyzeDataValue(sid, tag, o, level_val)+",";
             }
 
             return vv.Substring(0, vv.Length - 1); ;
@@ -212,9 +212,26 @@ namespace Rest
             DateTime start_date = end_date.AddMonths(o);
 
 
-            return BizApi.QueryAnalyzeData(tag, start_date, end_date, level_val, industry,location,type);
+            return BizApi.QueryAnalyzeData(tag, o, level_val, industry,location,type);
         }
 
+
+        [WebGet(UriTemplate = "analyzebyId?sid={sid}&old={old}&big={big}&month={month}", ResponseFormat = WebMessageFormat.Json)]
+        public List<AnalyzeData> QueryAnalyzeById(string sid,string old,string big,string month)
+        {
+            int o = string.IsNullOrEmpty(old) ? 6 :Int32.Parse(old);
+            int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
+            int b = string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
+            return BizApi.QueryAnalyzeDataById(sid, o,b,m);
+        }
+        [WebGet(UriTemplate = "analyzebyDate?sid={sid}&start={start}&end={end}&big={big}&month={month}", ResponseFormat = WebMessageFormat.Json)]
+        public List<AnalyzeData> QueryAnalyzeByDate(string sid, string start,string end,string big,string month)
+        {
+            int b= string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
+            int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
+            DateTime endDate = string.IsNullOrEmpty(end) ? DateTime.Now : BizCommon.ParseToDate(end);
+            return BizApi.QueryAnalyzeDataByDate(sid, BizCommon.ParseToDate(start), endDate,b,m);
+        }
         [WebGet(UriTemplate = "analyze1?level={level}&tag={tag}&old={old}&daybefore={daybefore}&industry={industry}&location={location}&type={type}", ResponseFormat = WebMessageFormat.Json)]
         [Description("type-CYB,ZB,SZ,SH")]
         public List<AnalyzeData> QueryAnalyzeRetry(string level, string tag, string old, string daybefore, string industry, string location, string type)
@@ -228,7 +245,7 @@ namespace Rest
                 DateTime end_date = now.AddDays((double)(-Int32.Parse(daybefore)));
                 DateTime start_date = end_date.AddMonths(-Int32.Parse(old));
 
-                list=BizApi.QueryAnalyzeData(tag, start_date, end_date, Int32.Parse(level), industry, location, type);
+                list=BizApi.QueryAnalyzeData(tag, Int32.Parse(old), Int32.Parse(level), industry, location, type);
                 if (list.Count == 0)
                 {
                     retry++;

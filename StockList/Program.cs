@@ -19,7 +19,10 @@ namespace StockList
     {
         public static void Main(string[] args)
         {
-            BizApi.ComputeAll(1, new DateTime(2015, 1, 1), DateTime.Now);
+
+            List<AnalyzeData> list = BizApi.QueryAnalyzeDataByDate("sh601899", new DateTime(2015, 12, 12), DateTime.Now,500,12);
+            Console.WriteLine(list.Count);
+            //BizApi.ComputeAll(1, new DateTime(2015, 1, 1), DateTime.Now);
             //string sql = "select * from basicinfo";
             //DataSet ds = MySqlHelper.GetDataSet(sql);
             //Console.WriteLine(ds.Tables[0].Rows.Count);

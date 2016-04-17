@@ -16,3 +16,6 @@ http://localhost/web/analyze-statistics.html?start=20140101&level=1&end=20150304
 
 
 http://my.oschina.net/u/209016/blog/79000
+
+
+update test.analyzedata set month=TIMESTAMPDIFF(MONTH,startdate,enddate);

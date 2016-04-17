@@ -8,14 +8,14 @@
   <analyzeStartDate>2014-01-01</analyzeStartDate>
   <analyeChartDir>D:\stock\store\chart</analyeChartDir>
   <clean>true</clean>
-  <top>2200</top>
+  <top>200</top>
   <querytop>50</querytop>
   <onlytop>true</onlytop>
   <bigDeal>500</bigDeal>
   <downloadAll>0</downloadAll>
   <downloadthreadnum>1</downloadthreadnum>
   <downloadAndInsert>true</downloadAndInsert>
-  <mysqlstring>Database='Test';Data Source='114.215.102.172';User Id='gl';Password='gl';charset='utf8';pooling=true"</mysqlstring>
+  <mysqlstring>Database='Test';Data Source='114.215.102.172';User Id='gl';Password='gl';charset='utf8';pooling=true</mysqlstring>
 
   <daysbefore>0</daysbefore>
 

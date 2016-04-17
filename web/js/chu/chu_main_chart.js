@@ -65,6 +65,8 @@ chu_main_chart.showchart = function (stock,big,type,start) {
     var big_share_rate = [];
     var close = [];
 
+	var rank=[];
+	
     $.ajaxSetup({ async: false });
     var url = "/rest/rest/query/id/" + stock + "?big=" + big + "&type=" + type + "&start=" + start;
     var t = $.getJSON(url, function (data) {
@@ -84,6 +86,14 @@ chu_main_chart.showchart = function (stock,big,type,start) {
         }
     });
 
+	  var url = "/rest/rest/analyzebyDate?sid=" + stock +"&start=" + start;
+    var t = $.getJSON(url, function (data1) {
+        for (var i in data1) {
+            rank[i] = data1[i]["rank"];
+            
+			
+        }
+    });
 
     seriesOptions = {
         name: "test",
@@ -228,6 +238,75 @@ chu_main_chart.showchart = function (stock,big,type,start) {
              type: 'line',
              color: 'red'
          }
+
+//        {
+//        name: 'big share rate',
+//    yAxis: 1,
+//    data: diff_share,
+//    type: 'line',
+//    color: 'red'
+//}
+        ]
+    });//high chart 2
+	
+	    $('#container3').highcharts({
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'analyze chart',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: tag
+        },
+        yAxis: [{
+            title: {
+                text: 'trade data'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        }, //first Y
+        {
+            title: {
+                text: 'price'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }],
+            opposite: true
+        } //second Y
+
+        ],
+        tooltip: {
+            shared: true
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            x: 120,
+            verticalAlign: 'top',
+            y: 100,
+            floating: true,
+            backgroundColor: '#FFFFFF'
+        },
+        series: [
+        {
+            name: 'diff money',
+            yAxis: 0,
+            data: rank,
+            type: 'line',
+            color: 'blue'
+        }
 
 //        {
 //        name: 'big share rate',

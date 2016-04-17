@@ -233,6 +233,7 @@ namespace big
 
             return list;
         }
+
         #endregion
         #region analyze
 
@@ -288,7 +289,7 @@ namespace big
             return list;
         }
 
-        public static List<AnalyzeData> QueryAnalyzeData(string tag)
+        public static List<AnalyzeData> QueryAnalyzeDataByTag(string tag)
         {
             List<AnalyzeData> list = new List<AnalyzeData>();
 
@@ -312,6 +313,92 @@ namespace big
                     rank = Int32.Parse(dr["rank"].ToString()),
                     //startdate = DateTime.Parse(dr["startdate"].ToString()),
                     startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
+                    month = Int32.Parse(dr["month"].ToString()),
+
+                };
+
+                list.Add(bd);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sid"></param>
+        /// <param name="old">months ago</param>
+        /// <param name="big"></param>
+        /// <param name="month"> analye months</param>
+        /// <returns></returns>
+        public static List<AnalyzeData> QueryAnalyzeDataById(string sid, int old = 6,int big=500,int month=12)
+        {
+            List<AnalyzeData> list = new List<AnalyzeData>();
+
+            string sql = "";
+
+            if (old != 0) {
+                string newTag = BizCommon.ParseToString(DateTime.Now.AddMonths(-old));
+                sql = string.Format("select A.sid,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}'   and A.tag>'{4}' and A.big={6} and month={7} order by tag", ANALYZE, sid, Constant.TOP,INFOEXT,newTag,big,month);
+        }
+            else
+               sql = string.Format("select A.sid,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}' and A.big={4} and A.month={5} order by rank", ANALYZE, sid, Constant.TOP, INFOEXT,big,month);
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                AnalyzeData bd = new AnalyzeData()
+                {
+                    sid = dr["sid"].ToString(),
+                    tag = BizCommon.ParseToString(DateTime.Now),
+                    name = dr["name"].ToString(),
+                    firstlevel = dr["firstlevel"].ToString(),
+                    secondlevel = dr["secondlevel"].ToString(),
+                    enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
+                    //lastupdate = dr["lastupdate"].ToString(),
+                    value = Decimal.Parse(dr["value"].ToString()),
+                    rank = Int32.Parse(dr["rank"].ToString()),
+                    //startdate = DateTime.Parse(dr["startdate"].ToString()),
+                    startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
+                    month = Int32.Parse(dr["month"].ToString()),
+
+                };
+
+                list.Add(bd);
+            }
+
+            return list;
+        }
+
+
+        public static List<AnalyzeData> QueryAnalyzeDataByDate(string sid, DateTime start,DateTime end,int big,int month)
+        {
+            List<AnalyzeData> list = new List<AnalyzeData>();
+
+            string sql = string.Format("select A.sid,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}'   and A.tag>'{4}' and A.tag<'{5}' and  A.big={6} and A.month={7} order by tag", ANALYZE, sid, Constant.TOP, INFOEXT, BizCommon.ParseToString(start), BizCommon.ParseToString(end),big,month);
+           
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                AnalyzeData bd = new AnalyzeData()
+                {
+                    sid = dr["sid"].ToString(),
+                    tag = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
+                    name = dr["name"].ToString(),
+                    firstlevel = dr["firstlevel"].ToString(),
+                    secondlevel = dr["secondlevel"].ToString(),
+                    enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
+                    //lastupdate = dr["lastupdate"].ToString(),
+                    value = Decimal.Parse(dr["value"].ToString()),
+                    rank = Int32.Parse(dr["rank"].ToString()),
+                    //startdate = DateTime.Parse(dr["startdate"].ToString()),
+                    startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
+                    month = Int32.Parse(dr["month"].ToString()),
 
                 };
 
@@ -332,7 +419,7 @@ namespace big
         /// <param name="location"></param>
         /// <param name="type">CYB-创业板，ZXB-中小板，ZB-主板，SH-上海，SZ-深圳</param>
         /// <returns></returns>
-        public static List<AnalyzeData> QueryAnalyzeData(string tag, DateTime start, DateTime end, int level, string industry, string location, string type)
+        public static List<AnalyzeData> QueryAnalyzeData(string tag, int month, int level, string industry, string location, string type)
         {
             string sql = "";
             if (string.IsNullOrEmpty(industry) && string.IsNullOrEmpty(location))
@@ -342,52 +429,52 @@ namespace big
                     switch (type)
                     {
                         case "CYB":
-                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  and sid like 'sz3%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and month={4}  and sid like 'sz3%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                             break;
                         case "ZXB":
-                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {6} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu<3  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), INFOEXT);
+                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {5} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu<3  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month, INFOEXT);
                             break;
                         case "XPG":
-                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {6} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu<1  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), INFOEXT);
+                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {5} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu<1  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month, INFOEXT);
                             break;
                         case "ZB":
-                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {6} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu>20  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), INFOEXT);
+                            sql = string.Format("select A.tag tag,A.level level,A.sid sid,A.name name,A.value value,A.firstlevel firstlevel,A.secondlevel secondlevel,A.enddate enddate,A.rank rank,A.startdate startdate,A.big big from {0} A join {5} B on A.sid=B.sid  and A.tag='{2}'  and A.level={3} and A.startdate='{4}' and A.enddate='{5}' and B.liutonggu>20  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month, INFOEXT);
                             break;
                         case "SH":
-                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  and sid like 'sh%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and and month={4}  and sid like 'sh%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                             break;
 
                         case "SZ":
-                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  and sid like 'sz%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and and month={4} and sid like 'sz%' order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                             break;
 
                         case "ALL":
-                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and and month={4} order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                             break;
                         default:
-                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                            sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and and month={4} order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                             break;
 
                     }
                 }
                 else
                 {
-                    sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}'  order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+                    sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where  tag='{2}'  and level={3} and and month={4} order by rank limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month);
                 }
             }
             else
             {
                 if (!string.IsNullOrEmpty(industry))
-                    sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}' and firstlevel='{6}' order by rank  limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), industry);
+                    sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where tag='{2}'  and level={3} and and month={4}and firstlevel='{6}' order by rank  limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month, industry);
                 else if (!string.IsNullOrEmpty(location))
-                    sql = string.Format("select A.tag as tag,A.level as level,A.sid as sid,A.name as name,A.value as value,A.firstlevel firstlevel,A.secondlevel as secondlevel,A.enddate as enddate,A.rank as rank,A.startdate as startdate,A.big as big from {0} A join {6} B  on A.sid=B.sid  and tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}' and location='{7}'  order by rank  limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), INFO, location);
+                    sql = string.Format("select A.tag as tag,A.level as level,A.sid as sid,A.name as name,A.value as value,A.firstlevel firstlevel,A.secondlevel as secondlevel,A.enddate as enddate,A.rank as rank,A.startdate as startdate,A.big as big from {0} A join {6} B  on A.sid=B.sid  and tag='{2}'  and level={3} and and month={4}and location='{7}'  order by rank  limit {1}", ANALYZE, Constant.QUERY_TOP, tag, level, month, INFO, location);
             }
             return BuildAnalyzeData(sql);
         }
 
-        public static List<AnalyzeData> QueryAnalyzeDataByFilter(string tag, DateTime start, DateTime end, int level, decimal share, decimal shourutongbi, decimal jingzichan, string firstlevel)
+        public static List<AnalyzeData> QueryAnalyzeDataByFilter(string tag, int month, int level, decimal share, decimal shourutongbi, decimal jingzichan, string firstlevel)
         {
-            string sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where rank<{1} and tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}' order by rank", ANALYZE, Constant.TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+            string sql = string.Format("select tag,level,sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where rank<{1} and tag='{2}'  and level={3} and and month={4}order by rank", ANALYZE, Constant.TOP, tag, level, month);
             return BuildAnalyzeData(sql);
         }
 
@@ -412,7 +499,8 @@ namespace big
                     rank = Int32.Parse(dr["rank"].ToString()),
                     startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
                     level = Int32.Parse(dr["level"].ToString()),
-                    big = Int32.Parse(dr["big"].ToString())
+                    big = Int32.Parse(dr["big"].ToString()),
+                    month = Int32.Parse(dr["month"].ToString()),
                 };
 
                 list.Add(bd);
@@ -421,9 +509,9 @@ namespace big
             return list;
         }
 
-        public static string QueryAnalyzeDataValue(string sid, string tag, DateTime start, DateTime end, int level)
+        public static string QueryAnalyzeDataValue(string sid, string tag, int month, int level)
         {
-            string sql = string.Format("select sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where rank<{1} and tag='{2}'  and level={3} and startdate='{4}' and enddate='{5}' and sid='{6}' order by rank", ANALYZE, Constant.TOP, tag, level, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end), sid);
+            string sql = string.Format("select sid,name,value,firstlevel,secondlevel,enddate,rank,startdate,big from {0} where rank<{1} and tag='{2}'  and level={3} and and month={4}and sid='{5}' order by rank", ANALYZE, Constant.TOP, tag, level,month, sid);
             DataSet ds = MySqlHelper.GetDataSet(sql);
             if (ds == null) return "----";
             DataTable dt = ds.Tables[0];
@@ -595,7 +683,7 @@ namespace big
 
                 //InfoData id=BizApi.QueryInfoById(sid);
 
-                AnalyzeData ad1 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), start, end);
+                AnalyzeData ad1 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), months_before);
 
                 //AnalyzeData ad2 = BizApi.ComputeSingle3(id, 1, (int)(id.weight * 1000), end, now);
 
@@ -615,10 +703,11 @@ namespace big
         }
 
         //算法3
-        public static AnalyzeData ComputeSingle3(InfoData id, int level, int big, DateTime start, DateTime end)
+        public static AnalyzeData ComputeSingle3(InfoData id, int level, int big,int month)
         {
-            List<BasicData> bd_list = QueryBasicDataByRange(id.sid, start, end, "d", big);
+            List<BasicData> bd_list = QueryBasicDataByRange(id.sid, month, "d", big);
 
+            DateTime end = DateTime.Now;
             if (bd_list.Count == 0)
             {
                 return new AnalyzeData()
@@ -1034,9 +1123,9 @@ namespace big
 
         #region basicdata
 
-        public static List<BasicData> QueryBasicDataByRange(string sid, DateTime start, DateTime end, string type, int big)
+        public static List<BasicData> QueryBasicDataByRange(string sid, int month, string type, int big)
         {
-            string sql = string.Format("select big,time,c_type,close,open,low,high,totalshare,totalmoney,buyshare,buymoney,sellshare,sellmoney from {0} where c_type='{1}' and  big={2} and time>='{3}' and time<='{4}'", sid, type, big, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(end));
+            string sql = string.Format("select big,time,c_type,close,open,low,high,totalshare,totalmoney,buyshare,buymoney,sellshare,sellmoney from {0} where c_type='{1}' and  big={2} and time>='{3}' and time<='{4}'", sid, type, big, month);
             return BuildBasicData(sql);
         }
 

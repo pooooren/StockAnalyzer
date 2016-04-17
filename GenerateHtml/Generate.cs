@@ -18,75 +18,15 @@ namespace GenerateHtml
             //path = @"G:\github\StockAnalyzer\web\";
 
             string[] old_list = Constant.ANALYZE_TIME.Split('-');
+            //string[] type_list = { "XPG", "ALL", "CYB", "ZXB", "ZB" };
+            //string[] industry_list = BizApi.QueryAllIndustry();
+           // string[] location_list = BizApi.QueryAllLocation();
+
             string[] type_list = { "XPG", "ALL", "CYB", "ZXB", "ZB" };
-            string[] industry_list = BizApi.QueryAllIndustry();
-            string[] location_list = BizApi.QueryAllLocation();
+            string[] industry_list = new string[0];
+            string[] location_list = new string[0];
 
             GenerateSingle(path, tag, old_list, type_list, industry_list, location_list);
-            //string filename = "";
-            //foreach (string old in old_list)
-            //{
-
-            //    foreach (string type in type_list)
-            //    {
-            //        try
-            //        {
-            //            filename = string.Format("analyze_{0}_{1}.html", old, type);
-            //            if (File.Exists(temp + filename)) File.Delete(temp + filename);
-            //            string haha = Exec(Constant.ANALYZE_LEVEL.ToString(), tag, old, Constant.DAYS_BEFORE.ToString(), "", "", type);
-            //            string template = Common.FileUtil.ReadFile(path + "analyzetemplate.html");
-            //            template = template.Replace("PLACEHOLDER", haha);
-
-            //            Common.FileUtil.WriteFile(temp + filename, template);
-            //            Console.WriteLine(filename + " generate");
-            //        }
-            //        catch
-            //        {
-            //            Console.WriteLine(filename + " fail");
-            //        }
-            //    }
-
-            //    foreach (string industry in industry_list)
-            //    {
-            //        try
-            //        {
-            //            filename = string.Format("analyze_{0}_{1}.html", old, industry);
-            //            if (File.Exists(temp + filename)) File.Delete(temp + filename);
-            //            string haha = Exec(Constant.ANALYZE_LEVEL.ToString(), tag, old, Constant.DAYS_BEFORE.ToString(), industry, "", "");
-            //            string template = Common.FileUtil.ReadFile(path + "analyzetemplate.html");
-            //            template = template.Replace("PLACEHOLDER", haha);
-
-            //            Common.FileUtil.WriteFile(temp + filename, template);
-            //            Console.WriteLine(filename + "generate");
-            //        }
-            //        catch
-            //        {
-            //            Console.WriteLine(filename + " fail");
-            //        }
-            //    }
-
-            //    foreach (string location in location_list)
-            //    {
-            //        try
-            //        {
-
-            //            filename = string.Format("analyze_{0}_{1}.html", old, location);
-            //            if (File.Exists(temp + filename)) File.Delete(temp + filename);
-            //            string haha = Exec(Constant.ANALYZE_LEVEL.ToString(), tag, old, Constant.DAYS_BEFORE.ToString(), "", location, "");
-            //            string template = Common.FileUtil.ReadFile(path + "analyzetemplate.html");
-            //            template = template.Replace("PLACEHOLDER", haha);
-
-            //            Common.FileUtil.WriteFile(temp + filename, template);
-            //            Console.WriteLine(filename + "generate");
-            //        }
-            //        catch
-            //        {
-            //            Console.WriteLine(filename + " fail");
-            //        }
-            //    }
-
-
-            //}
         }
 
         public static void GenerateSingle(string path, string tag, string[] old_list, string[] type_list, string[] industry_list, string[] location_list)
@@ -168,7 +108,7 @@ namespace GenerateHtml
             DateTime end_date = now.AddDays((double)(-Int32.Parse(daybefore)));
             DateTime start_date = end_date.AddMonths(-Int32.Parse(old));
 
-            List<AnalyzeData> data = BizApi.QueryAnalyzeData(tag, start_date, end_date, Int32.Parse(level), industry, location, type);
+            List<AnalyzeData> data = BizApi.QueryAnalyzeData(tag, Int32.Parse(old), Int32.Parse(level), industry, location, type);
 
 
             newRow += "Start:" + BizCommon.ParseToString(start_date) + "  End:" + BizCommon.ParseToString(end_date);
@@ -266,7 +206,7 @@ namespace GenerateHtml
                 DateTime start_date = end_date.AddMonths(o);
 
 
-                vv += BizApi.QueryAnalyzeDataValue(sid, tag, start_date, end_date, level_val) + ",";
+                vv += BizApi.QueryAnalyzeDataValue(sid, tag, o, level_val) + ",";
             }
 
             return vv.Substring(0, vv.Length - 1); ;

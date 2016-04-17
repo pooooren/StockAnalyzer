@@ -15,15 +15,15 @@ namespace Info
     {
         public static void Main(string[] args)
         {
-            //string stock = "sz000333";
+            //string stock = "sz300500";
             //InfoData id = BuildInfo(stock);
             //Console.WriteLine(id);
-            // BizApi.InsertInfo(id);
-             IList<InfoData> list = GetList();
-             foreach (InfoData id in list)
-             {
-                 BizApi.InsertInfo(id);
-             }
+            //BizApi.InsertInfo(id);
+            IList<InfoData> list = GetList();
+            foreach (InfoData id in list)
+            {
+                BizApi.InsertInfo(id);
+            }
         }
 
         public static IList<InfoData> GetList()
