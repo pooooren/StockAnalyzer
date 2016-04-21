@@ -20,7 +20,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
@@ -37,7 +37,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO">
@@ -63,7 +64,6 @@
     <Compile Include="IStockModule.cs" />
     <Compile Include="MyBase64.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StockException.cs" />
     <Compile Include="StockInfo.cs" />
     <Compile Include="StockLog.cs" />
     <Compile Include="StockUtil.cs" />

@@ -240,7 +240,6 @@ namespace Import
                 decimal current;
 
                 decimal open = 0, close = 0, high = 0, low = 0;
-                string extstring = "";
 
 
                 foreach (String[] record in hi)

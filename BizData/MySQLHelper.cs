@@ -155,7 +155,7 @@ namespace big
                 conn.Close();
                 return ds;
             }
-            catch (Exception e)
+            catch 
             {
                 //throw e;
                 StockLog.Log.Error("Fail --"+cmdText);

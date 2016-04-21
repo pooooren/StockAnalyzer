@@ -269,12 +269,12 @@ namespace Rest
             if (!string.IsNullOrEmpty(level)) level_val = Int32.Parse(level);
             if (!string.IsNullOrEmpty(tag)) tag = BizCommon.ParseToString(DateTime.Now);
 
-            if (string.IsNullOrEmpty(type))
-                return BizApi.QueryAnalyzeStatisticsByName(tag, level_val);
-            if (type.Equals("name"))
-                return BizApi.QueryAnalyzeStatisticsByName(tag, level_val);
-            if (type.Equals("industry"))
-                return BizApi.QueryAnalyzeStatisticsByIndustry(tag, level_val);
+            //if (string.IsNullOrEmpty(type))
+            //    return BizApi.QueryAnalyzeStatisticsByName(tag, level_val);
+            //if (type.Equals("name"))
+            //    return BizApi.QueryAnalyzeStatisticsByName(tag, level_val);
+            //if (type.Equals("industry"))
+            //    return BizApi.QueryAnalyzeStatisticsByIndustry(tag, level_val);
             return null;
         }
 

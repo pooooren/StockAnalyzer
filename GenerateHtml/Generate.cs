@@ -170,7 +170,7 @@ namespace GenerateHtml
                     newRow += "<td>" + BizApi.QueryMaxMinPriceByRange(sid, 12) + "</td>";
                     //Console.WriteLine("---4----");
                 }
-                catch(Exception e)
+                catch
                 {
                     
                     Console.WriteLine("{0}-{1}-{2}-{3}-{4}-{5}", sid, tag, old, industry, location, type);

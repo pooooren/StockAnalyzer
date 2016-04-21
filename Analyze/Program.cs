@@ -28,17 +28,18 @@ namespace Analyze
 
         public static void exec(int day_before)
         {
+            int big = 500;
             DateTime now = DateTime.Now;
             string tag = now.ToString("yyyyMMdd");
             DateTime end = now.AddDays(day_before);
             DateTime start = new DateTime();
             string[] list = Constant.ANALYZE_TIME.Split('-');
 
-            BizApi.DeleteAnalyzeData(tag);
-            foreach (string i in list)
+            BizApi.DeleteAnalyzeData(tag,big);
+            foreach (string month in list)
             {
-                start = end.AddMonths(-int.Parse(i));
-                BizApi.InsertAnalyzeData(tag, start, end,i);
+                start = end.AddMonths(-int.Parse(month));
+                BizApi.InsertAnalyzeData(tag, start, end,month,big);
             }
         }
     }

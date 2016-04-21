@@ -9,6 +9,7 @@ using big;
 using big.entity;
 using Common;
 using LumenWorks.Framework.IO.Csv;
+using System.Data;
 
 namespace UpdateBigDeal
 {
@@ -16,12 +17,12 @@ namespace UpdateBigDeal
     {
         public static void Main(string[] args)
         {
-            DateTime start = new DateTime(2014, 3, 21);
-            DateTime end = new DateTime(2014, 3, 21);
+            // DateTime start = new DateTime(2014, 3, 21);
+            //DateTime end = new DateTime(2014, 3, 21);
 
-            DownloadData("sh600000", start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"));
+            //DownloadData("sh600000", start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"));
 
-
+            SplitAnalyzeData();
             //List<InfoData> list = BizApi.QueryInfoAll();
             ////List<InfoData> list = new List<InfoData>() { BizApi.QueryInfoById("sh600157") };
             //foreach (InfoData id in list)
@@ -173,7 +174,6 @@ namespace UpdateBigDeal
                 decimal current;
 
                 decimal open = 0, close = 0, high = 0, low = 0;
-                string extstring = "";
 
 
                 foreach (String[] record in hi)
@@ -274,6 +274,57 @@ namespace UpdateBigDeal
             return list;
         }
 
+
+
+        public static void SplitAnalyzeData()
+        {
+            List<AnalyzeData> list = QueryAnalyzeData();
+            foreach(AnalyzeData ad in list)
+            {
+                BizApi.InsertAnalyzeData(ad, "analyzedata_" + ad.month + "_" + ad.big);
+                Console.WriteLine("{0} {1} {2} {3}", ad.sid, ad.tag, ad.big, ad.month);
+            }
+        }
+
+
+
+
+        public static List<AnalyzeData> QueryAnalyzeData()
+        {
+            List<AnalyzeData> list = new List<AnalyzeData>();
+
+            string sql = string.Format("select  sid , tag , name , firstlevel , secondlevel , value , enddate , startdate , rank , big , level , month from analyzedata order by tag");
+
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+            if (ds == null) return list;
+            DataTable dt = ds.Tables[0];
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                AnalyzeData bd = new AnalyzeData()
+                {
+                    sid = dr["sid"].ToString(),
+                    tag = dr["tag"].ToString(),
+                    name = dr["name"].ToString(),
+                    firstlevel = dr["firstlevel"].ToString(),
+                    secondlevel = dr["secondlevel"].ToString(),
+                    enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
+                    //lastupdate = dr["lastupdate"].ToString(),
+                    value = Decimal.Parse(dr["value"].ToString()),
+                    rank = Int32.Parse(dr["rank"].ToString()),
+                    //startdate = DateTime.Parse(dr["startdate"].ToString()),
+                    startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
+                    month = Int32.Parse(dr["month"].ToString()),
+
+                    level = Int32.Parse(dr["level"].ToString()),
+                    big = Int32.Parse(dr["big"].ToString())
+                };
+
+                list.Add(bd);
+            }
+
+            return list;
+        }
         public static List<BigData> Parse(string sid, string time, string bigdeal)
         {
             List<BigData> list = new List<BigData>();

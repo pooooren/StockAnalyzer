@@ -15,7 +15,6 @@ namespace InfoExt
 {
     public class Program
     {
-        static decimal DEFAULT = 0;
         public static void Main(string[] args)
         {
             List<InfoData> iflist = BizApi.QueryInfoAll();
