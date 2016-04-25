@@ -222,7 +222,7 @@ namespace Rest
             int o = string.IsNullOrEmpty(old) ? 6 :Int32.Parse(old);
             int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
             int b = string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
-            return BizApi.QueryAnalyzeDataById(sid, o,b,m);
+            return BizApi.QueryAnalyzeDataByMonth(sid, o,b,m);
         }
         [WebGet(UriTemplate = "analyzebyDate?sid={sid}&start={start}&end={end}&big={big}&month={month}", ResponseFormat = WebMessageFormat.Json)]
         public List<AnalyzeData> QueryAnalyzeByDate(string sid, string start,string end,string big,string month)
@@ -230,7 +230,7 @@ namespace Rest
             int b= string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
             int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
             DateTime endDate = string.IsNullOrEmpty(end) ? DateTime.Now : BizCommon.ParseToDate(end);
-            return BizApi.QueryAnalyzeDataByDate(sid, BizCommon.ParseToDate(start), endDate,b,m);
+            return BizApi.QueryAnalyzeDataByRange(sid, BizCommon.ParseToDate(start), endDate,b,m);
         }
         [WebGet(UriTemplate = "analyze1?level={level}&tag={tag}&old={old}&daybefore={daybefore}&industry={industry}&location={location}&type={type}", ResponseFormat = WebMessageFormat.Json)]
         [Description("type-CYB,ZB,SZ,SH")]

@@ -1,0 +1,70 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="js/jquery-2.1.3.js"></script>
+    <script type="text/javascript" src="js/highstock.js"></script>
+    <script type="text/javascript" src="js/modules/exporting.js"></script>
+    <script type="text/javascript" src="js/chu/chu_single.js"></script>
+    <script type="text/javascript" src="js/chu/chu_common.js"></script>
+    <script>
+        $(function () {
+
+			$("#startdateradio").click(function(){
+				var ss=$("input[name='startdate']:checked").val();
+				$("#start").val(ss);
+			});
+			
+			var display_detail = 0;
+
+			$("#QueryButton").click(function () {
+			    show();
+			});
+
+
+            var sid = "sid", big = "big";
+            sid = chu_common.parsepara(sid);
+            big = chu_common.parsepara(big);
+            $("#stock").val(sid);
+            $("#BigSelect").empty();
+            $("#BigSelect").append("<option  selected='selected'>" + big + "</option>");
+
+            show();
+
+            function show() {
+                var stock = $("#stock").val();
+                var type = $("#TypeSelect  option:selected").text();
+                var big = $("#BigSelect  option:selected").text();
+                var start = $("#start").val();
+                chu_main_chart.showchart(stock, big, type, start);
+                if (display_detail == 0) {
+                    chu_main_chart.showdetail(stock);
+                    display_detail = 1;
+                }
+            };//show
+            });//all
+
+    </script>
+</head>
+<body>
+    <div id="input">
+        <input id="stock" type="text" />
+        <input id="start" type="text" value="20150101" />
+        <select id="TypeSelect"><option>w</option><option>m</option><option>d</option></select>
+        <select id="BigSelect"></select>
+        <input id="QueryButton" type="button" value="Query" />
+
+        <label id="name"></label>
+        <a id="industry1" target='_parent' href=""></a>
+        <a id="industry2" target='_parent' href=""></a>
+        <a id="location" target='_parent' href=""></a>
+        <div id="startdateradio">
+            <input type="radio" name="startdate" value="20140101"> 20140101</input>
+            <input type="radio" name="startdate" value="20150101" checked="checked">20150101</input>
+            <input type="radio" name="startdate" value="20150601">20150601</input>
+        </div>
+        <div id="finance"></div>
+    </div>
+
+	<div id="container2" style="min-width:500px;height:300px"></div>
+</body>
+</html>

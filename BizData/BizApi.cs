@@ -309,19 +309,19 @@ namespace big
         /// <param name="big"></param>
         /// <param name="month"> analye months</param>
         /// <returns></returns>
-        public static List<AnalyzeData> QueryAnalyzeDataById(string sid, int old = 6,int big=500,int month=12)
+        public static List<AnalyzeData> QueryAnalyzeDataByMonth(string sid, int old = 6,int big=500,int month=12)
         {
-            Dictionary<string, BasicData> basicList = QueryBasicDataDicByRange(sid, old, "d", big);
+            return QueryAnalyzeDataByRange(sid, DateTime.Now.AddMonths(-old), DateTime.Now, big, month);
+        }
+
+
+        public static List<AnalyzeData> QueryAnalyzeDataByRange(string sid, DateTime start,DateTime end,int big,int month)
+        {
+
+            Dictionary<string, BasicData> basicList = QueryBasicDataDicByRange(sid, BizCommon.ParseToString(start),BizCommon.ParseToString(end), "d", big);
             Dictionary<string, AnalyzeData> list = new Dictionary<string, AnalyzeData>();
             List<AnalyzeData> newlist = new List<AnalyzeData>();
-            string sql = "";
-
-            if (old != 0) {
-                string newTag = BizCommon.ParseToString(DateTime.Now.AddMonths(-old));
-                sql = string.Format("select A.sid,A.tag,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}'   and A.tag>'{4}' and A.big={5} and month={6} order by tag", string.Format("{0}_{1}_{2}", ANALYZE, month, big), sid, Constant.TOP,INFOEXT,newTag,big,month);
-        }
-            else
-               sql = string.Format("select A.sid,A.tag,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}' and A.big={4} and A.month={5} order by rank", string.Format("{0}_{1}_{2}", ANALYZE, month, big), sid, Constant.TOP, INFOEXT,big,month);
+            string sql = string.Format("select A.sid,A.tag,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}'   and A.tag>'{4}' and A.tag<'{5}' and  A.big={6} and A.month={7} order by tag", string.Format("{0}_{1}_{2}", ANALYZE, month, big), sid, Constant.TOP, INFOEXT, BizCommon.ParseToString(start), BizCommon.ParseToString(end), big, month);
             DataSet ds = MySqlHelper.GetDataSet(sql);
             if (ds == null) return newlist;
             DataTable dt = ds.Tables[0];
@@ -338,18 +338,18 @@ namespace big
                     enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
                     //lastupdate = dr["lastupdate"].ToString(),
                     value = Decimal.Parse(dr["value"].ToString()),
-                    rank = Int32.Parse(dr["rank"].ToString()),
+                    rank = Constant.TOP - Int32.Parse(dr["rank"].ToString()),
                     //startdate = DateTime.Parse(dr["startdate"].ToString()),
                     startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
                     month = Int32.Parse(dr["month"].ToString()),
 
                 };
 
-                list.Add(dr["tag"].ToString(),bd);
+                list.Add(dr["tag"].ToString(), bd);
             }
 
             //fill all the data
-            
+
             foreach (string key in basicList.Keys)
             {
                 if (list.ContainsKey(basicList[key].tag))
@@ -361,7 +361,7 @@ namespace big
                     newlist.Add(new AnalyzeData()
                     {
                         sid = basicList[key].sid,
-                        rank = -100,
+                        rank = -1000,
                         tag = basicList[key].tag,
                         month = month,
                         big = big
@@ -370,42 +370,6 @@ namespace big
             }
             newlist.Sort(new AnalyzeComparatorByTag());
             return newlist;
-        }
-
-
-        public static List<AnalyzeData> QueryAnalyzeDataByDate(string sid, DateTime start,DateTime end,int big,int month)
-        {
-            List<AnalyzeData> list = new List<AnalyzeData>();
-
-            string sql = string.Format("select A.sid,A.name,A.value,A.firstlevel,A.secondlevel,A.enddate,A.rank,A.startdate,A.month from {0} A join {3} B on B.sid=A.sid and A.rank<{2} and A.sid='{1}'   and A.tag>'{4}' and A.tag<'{5}' and  A.big={6} and A.month={7} order by tag", string.Format("{0}_{1}_{2}", ANALYZE, month, big), sid, Constant.TOP, INFOEXT, BizCommon.ParseToString(start), BizCommon.ParseToString(end),big,month);
-           
-            DataSet ds = MySqlHelper.GetDataSet(sql);
-            if (ds == null) return list;
-            DataTable dt = ds.Tables[0];
-
-            foreach (DataRow dr in dt.Rows)
-            {
-                AnalyzeData bd = new AnalyzeData()
-                {
-                    sid = dr["sid"].ToString(),
-                    tag = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
-                    name = dr["name"].ToString(),
-                    firstlevel = dr["firstlevel"].ToString(),
-                    secondlevel = dr["secondlevel"].ToString(),
-                    enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
-                    //lastupdate = dr["lastupdate"].ToString(),
-                    value = Decimal.Parse(dr["value"].ToString()),
-                    rank = Int32.Parse(dr["rank"].ToString()),
-                    //startdate = DateTime.Parse(dr["startdate"].ToString()),
-                    startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
-                    month = Int32.Parse(dr["month"].ToString()),
-
-                };
-
-                list.Add(bd);
-            }
-
-            return list;
         }
 
         /// <summary>
@@ -588,13 +552,14 @@ namespace big
 
         public static void InsertAnalyzeData(AnalyzeData ad, string table)
         {
-                if (ad.value > 0)
-                {
+            ///TODO tag shoube be as enddate
+               // if (ad.value > 0)
+                //{
                     string sql = String.Format(
                     "INSERT INTO {0}(sid,value,tag,name,firstlevel,secondlevel,enddate,rank,startdate,big,level,month)VALUES('{1}',{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}',{10},{11},{12})",
                             table, ad.sid, ad.value, ad.tag, ad.name, ad.firstlevel, ad.secondlevel, ad.enddate, ad.rank, ad.startdate, ad.big, ad.level, ad.month);
                     MySqlHelper.ExecuteNonQuery(sql);
-                }
+               // }
         }
 
         public static void InsertAnalyzeData(List<AnalyzeData> list, string tag, DateTime start, DateTime end, int level,string month,int big)
@@ -635,7 +600,8 @@ namespace big
         public static AnalyzeData ComputeSingle2(string sid, int level, int big, DateTime start, DateTime end)
         {
             //decimal value = 0;
-            string sql = string.Format("select name,firstlevel,secondlevel,format(sqrt(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*(((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((high-low)*(high-low)*4)))),3) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
+            //string sql = string.Format("select name,firstlevel,secondlevel,format(sqrt(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*(((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((high-low)*(high-low)*4)))),3) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
+            string sql = string.Format("select name,firstlevel,secondlevel,format(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*sqrt((((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((high-low)*(high-low)*4))))/count(1)*1000,2) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
             DataSet ds = MySqlHelper.GetDataSet(sql);
             if (ds == null)
                 return new AnalyzeData()
@@ -654,12 +620,12 @@ namespace big
                     sid = sid,
                     level = level,
                     big = big,
-                    value = Decimal.Parse(dt.Rows[0]["value"].ToString() == "" ? "0" : dt.Rows[0]["value"].ToString()),
+                    value = Decimal.Parse(dt.Rows[0]["value"].ToString() == "" ? Constant.MIN_ANALYZE_VALUE.ToString() : dt.Rows[0]["value"].ToString()),
                     name = dt.Rows[0]["name"].ToString(),
                     firstlevel = dt.Rows[0]["firstlevel"].ToString(),
                     secondlevel = dt.Rows[0]["secondlevel"].ToString()
                 };
-
+               // Console.WriteLine("{0} {1} {2} {3}-{4}", sid, big, Decimal.Parse(dt.Rows[0]["value"].ToString() == "" ? Constant.MIN_ANALYZE_VALUE.ToString() : dt.Rows[0]["value"].ToString()),start,end);
                 return cd;
             }
             else
@@ -667,10 +633,11 @@ namespace big
                 return new AnalyzeData()
                 {
                     sid = sid,
-                    value = 0
+                    value = Constant.MIN_ANALYZE_VALUE
                 };
             }
 
+            
 
         }
 
@@ -1225,9 +1192,14 @@ namespace big
         }
 
 
-        public static Dictionary<string, BasicData> QueryBasicDataDicByRange(string sid, int month, string type, int big)
+        public static Dictionary<string, BasicData> QueryBasicDataDicByRange(string sid, int old, string type, int big)
         {
-            string sql = string.Format("select big,time,c_type,close,open,low,high,totalshare,totalmoney,buyshare,buymoney,sellshare,sellmoney from {0} where c_type='{1}' and  big={2} and time>='{3}' and time<='{4}'", sid, type, big, BizCommon.ParseToString(DateTime.Now.AddMonths(-month)), BizCommon.ParseToString(DateTime.Now));
+            return QueryBasicDataDicByRange(sid, BizCommon.ParseToString(DateTime.Now.AddMonths(-old)), BizCommon.ParseToString(DateTime.Now),type, big);
+        }
+
+        public static Dictionary<string, BasicData> QueryBasicDataDicByRange(string sid, string start,string end, string type, int big)
+        {
+            string sql = string.Format("select big,time,c_type,close,open,low,high,totalshare,totalmoney,buyshare,buymoney,sellshare,sellmoney from {0} where c_type='{1}' and  big={2} and time>='{3}' and time<='{4}'", sid, type, big, start, end);
             return BuildBasicDataDic(sql);
         }
 

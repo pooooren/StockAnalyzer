@@ -30,8 +30,9 @@ namespace Analyze
         {
             int big = 500;
             DateTime now = DateTime.Now;
-            string tag = now.ToString("yyyyMMdd");
+            
             DateTime end = now.AddDays(day_before);
+            string tag = end.ToString("yyyyMMdd");
             DateTime start = new DateTime();
             string[] list = Constant.ANALYZE_TIME.Split('-');
 

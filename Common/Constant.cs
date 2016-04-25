@@ -84,5 +84,9 @@ namespace Common
         public static int ANALYZE_LEVEL = 0;
 
         public static string ANALYZE_TIME = map["analyzetime"].Equals("") ? "24-12-6-3" : map["analyzetime"];
+
+        public static int MIN_ANALYZE_VALUE = -999999;
+
+      
     }
 }
