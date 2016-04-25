@@ -28,11 +28,14 @@ namespace Analyze
 
         public static void exec(int day_before)
         {
+            
             int big = 500;
             DateTime now = DateTime.Now;
             
             DateTime end = now.AddDays(day_before);
-            string tag = end.ToString("yyyyMMdd");
+            //if weekend, ignore;
+
+                string tag = end.ToString("yyyyMMdd");
             DateTime start = new DateTime();
             string[] list = Constant.ANALYZE_TIME.Split('-');
 

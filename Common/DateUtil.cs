@@ -66,6 +66,19 @@ namespace Common
             return list;
         }
 
+        public static bool isWeekend(DateTime dateTime)
+        {
+            return (dateTime.Date.DayOfWeek == DayOfWeek.Saturday || dateTime.Date.DayOfWeek == DayOfWeek.Sunday);
+        }
+        public static bool isSaturday
+            (DateTime dateTime)
+        {
+            return (dateTime.Date.DayOfWeek == DayOfWeek.Saturday);
+        }
+        public static bool isSunday(DateTime dateTime)
+        {
+            return ( dateTime.Date.DayOfWeek == DayOfWeek.Sunday);
+        }
         public static List<DateUnit> ConvertDailyDateUnit(DateTime start, DateTime end)
         {
             List<DateUnit> list = new List<DateUnit>();
