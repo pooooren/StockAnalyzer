@@ -602,6 +602,10 @@ namespace big
             //decimal value = 0;
             //string sql = string.Format("select name,firstlevel,secondlevel,format(sqrt(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*(((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((high-low)*(high-low)*4)))),3) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
             string sql = string.Format("select name,firstlevel,secondlevel,format(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*sqrt((((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((high-low)*(high-low)*4))))/count(1)*1000,2) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
+
+            //TODO:除以平均值
+            //string sql = string.Format("select name,firstlevel,secondlevel,format(sum(((buyshare-sellshare)/A.totalshare)*DATEDIFF(now(),time)*sqrt((((close-(totalmoney/A.totalshare))*(close-(totalmoney/A.totalshare))+(open-(totalmoney/A.totalshare))*(open-(totalmoney/A.totalshare))+(high-(totalmoney/A.totalshare))*(high-(totalmoney/A.totalshare))+(low-(totalmoney/A.totalshare))*(low-(totalmoney/A.totalshare)))/((totalmoney/A.totalshare)*(totalmoney/A.totalshare)*4))))/count(1)*1000,2) as value from {0} A join {4} B on B.sid='{0}' and A.big={1} and A.time >='{2}' and A.time<='{3}'", sid, big, start, end, INFO);
+
             DataSet ds = MySqlHelper.GetDataSet(sql);
             if (ds == null)
                 return new AnalyzeData()
@@ -625,7 +629,7 @@ namespace big
                     firstlevel = dt.Rows[0]["firstlevel"].ToString(),
                     secondlevel = dt.Rows[0]["secondlevel"].ToString()
                 };
-               // Console.WriteLine("{0} {1} {2} {3}-{4}", sid, big, Decimal.Parse(dt.Rows[0]["value"].ToString() == "" ? Constant.MIN_ANALYZE_VALUE.ToString() : dt.Rows[0]["value"].ToString()),start,end);
+               // Console.WriteLine("{0},{1},{2},{3},{4}", sid, big, Decimal.Parse(dt.Rows[0]["value"].ToString() == "" ? Constant.MIN_ANALYZE_VALUE.ToString() : dt.Rows[0]["value"].ToString()),start,end);
                 return cd;
             }
             else
