@@ -782,6 +782,14 @@ namespace big
                 string sq3 = string.Format("insert {0}(sid,lastupdate)values('{1}','{2}')", EXTRACT_TABLE_STATUS, sid, Constant.ANALYZE_START_DATE);
                 MySqlHelper.ExecuteNonQuery(sq3);
             }
+
+
+            //做一个补偿机制
+            string sql2 = String.Format("update  {0} set lastupdate='{1}'where lastupdate='0001-01-01'", EXTRACT_TABLE_STATUS, Constant.ANALYZE_START_DATE);
+            MySqlHelper.ExecuteNonQuery(sql2);
+   
+
+
             //if (create_table == 1)
             //{
             //    MySqlHelper.ExecuteNonQuery(string.Format("update {0} set lastupdate='{2}' where tablename='{1}'", CREATE_TABLE_STATUS, newname, DateTime.Now.ToString()));

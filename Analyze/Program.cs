@@ -34,6 +34,7 @@ namespace Analyze
             
             DateTime end = now.AddDays(day_before);
             //if weekend, ignore;
+            if (DateUtil.isWeekend(end)) return;
 
                 string tag = end.ToString("yyyyMMdd");
             DateTime start = new DateTime();
