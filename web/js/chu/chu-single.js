@@ -69,7 +69,7 @@ chu_main_chart.showchart = function (stock,big,type,start) {
 	
     $.ajaxSetup({ async: false });
 
-	  var url = "/rest/rest/analyzebyDate?sid=" + stock +"&start=" + start+"&month=12&big=500";
+    var url = "/rest/rest/analyzebyDate?sid=" + stock + "&start=" + start + "&month=12&big=500";
     var t = $.getJSON(url, function (data) {
         for (var i in data) {
             rank[i] = data[i]["rank"];
@@ -78,8 +78,26 @@ chu_main_chart.showchart = function (stock,big,type,start) {
         }
     });
 
+    $.ajaxSetup({ async: false });
+    var url = "/rest/rest/query/id/" + stock + "?big=500&type=d&start=" + start;
+    var t = $.getJSON(url, function (data) {
+        for (var i in data) {
+            tag[i] = data[i]["tag"];
+            totalshare[i] = data[i]["totalshare"];
+            sellshare[i] = data[i]["sellshare"];
+            buyshare[i] = data[i]["buyshare"];
+            incrementalBuyMoney[i] = data[i]["incrementalBuyMoney"];
+            incrementalSellMoney[i] = data[i]["incrementalSellMoney"];
+            diff[i] = incrementalBuyMoney[i] - incrementalSellMoney[i];
+            diff_share[i] = data[i]["incrementalBuyShare"] - data[i]["incrementalSellShare"];
+            close[i] = data[i]["close"];
+            big_share_rate[i] = (sellshare[i] + buyshare[i]) / totalshare[i];
+            big_share_rate[i] = chu_common.formatnumber(big_share_rate[i], 3);
 
-	    $('#container3').highcharts({
+        }
+    });
+
+    $('#container2').highcharts({
         chart: {
             zoomType: 'xy'
         },
@@ -103,28 +121,46 @@ chu_main_chart.showchart = function (stock,big,type,start) {
                 width: 1,
                 color: '#808080'
             }]
-        }
+        }, //first Y
+        {
+            title: {
+                text: 'price'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }],
+            opposite: true
+        } //second Y
+
         ],
         tooltip: {
-            shared: false
+            shared: true
         },
         legend: {
             layout: 'vertical',
             align: 'left',
             x: 120,
             verticalAlign: 'top',
-            y: 500,
+            y: 400,
             floating: true,
             backgroundColor: '#FFFFFF'
         },
-        series: [
-        {
+        series: [ {
             name: 'rank',
             yAxis: 0,
+            type: 'column',
             data: rank,
+            color: 'red'
+        },
+        {
+            name: 'close',
+            yAxis: 1,
             type: 'line',
+            data: close,
             color: 'blue'
-        }
-        ]
-    });//high chart 2
+        }]
+    }); //high chart1
+
 };

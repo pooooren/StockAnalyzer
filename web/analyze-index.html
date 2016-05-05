@@ -16,7 +16,7 @@
                 $.getJSON(url, function (data) {
                     var d = data.split('-');
                     $("#oldselect").empty();
-                    for(var i=d.length-1;i>=0;i--)
+                    for(var i=0;i<d.length;i++)
                     {
                         $("#oldselect ").append("<option>" + d[i] + "</option>");
                     }

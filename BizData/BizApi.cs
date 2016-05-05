@@ -338,7 +338,7 @@ namespace big
                     enddate = BizCommon.ParseToString(DateTime.Parse(dr["enddate"].ToString())),
                     //lastupdate = dr["lastupdate"].ToString(),
                     value = Decimal.Parse(dr["value"].ToString()),
-                    rank = Constant.TOP - Int32.Parse(dr["rank"].ToString()),
+                    rank =  - Int32.Parse(dr["rank"].ToString()),
                     //startdate = DateTime.Parse(dr["startdate"].ToString()),
                     startdate = BizCommon.ParseToString(DateTime.Parse(dr["startdate"].ToString())),
                     month = Int32.Parse(dr["month"].ToString()),
