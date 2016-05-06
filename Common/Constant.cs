@@ -87,6 +87,8 @@ namespace Common
 
         public static int MIN_ANALYZE_VALUE = -999999;
 
+        public static int RETRY = 3;
+
       
     }
 }

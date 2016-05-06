@@ -881,6 +881,15 @@ namespace big
 
         }
 
+        public static void DisableInfo(InfoData id)
+        {
+
+                string sql =
+                    string.Format("update {0} set valid=0 where sid='{1}'", INFO, id.sid);
+                MySqlHelper.ExecuteNonQuery(sql);
+
+
+        }
 
         #endregion
         //更新数据抽取的时间戳
@@ -1071,34 +1080,34 @@ namespace big
         public static List<InfoData> QueryInfoAll()
         {
             InfoData id = new InfoData();
-            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} order by sid", INFO);
+            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0}  where valid=1 order by sid", INFO);
             return BuildInfoData(sql);
         }
 
         public static InfoData QueryInfoById(string sid)
         {
-            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where sid='{1}' ", INFO, sid);
+            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where sid='{1}' and valid=1 ", INFO, sid);
 
             return BuildInfoData(sql)[0];
         }
 
         public static List<InfoData> QueryInfoByIndustry(string insutry)
         {
-            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where firstlevel='{1}' ", INFO, insutry);
+            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where firstlevel='{1}' and valid=1  ", INFO, insutry);
             return BuildInfoData(sql);
         }
 
         public static List<InfoData> QueryInfoByIndustry2(string insutry, string industry2)
         {
 
-            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where firstlevel='{1}' and secondlevel='{2}' ", INFO, insutry, industry2);
+            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where firstlevel='{1}' and secondlevel='{2}' and valid=1  ", INFO, insutry, industry2);
             return BuildInfoData(sql);
         }
 
 
         public static string[] QueryAllLocation()
         {
-            string sql = string.Format("select distinct location as location from {0} where location!=''", INFO);
+            string sql = string.Format("select distinct location as location from {0} where location!='' and valid=1 ", INFO);
             DataSet ds = MySqlHelper.GetDataSet(sql);
             if (ds == null) return null;
             DataTable dt = ds.Tables[0];
@@ -1118,7 +1127,7 @@ namespace big
         }
         public static List<InfoData> QueryInfoByLocation(string location)
         {
-            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where location='{1}' ", INFO, location);
+            string sql = string.Format("select sid,name,lastupdate,totalshare,floatshare,location,firstlevel,secondlevel,weight,list from {0} where location='{1}' and valid=1  ", INFO, location);
             return BuildInfoData(sql);
         }
 

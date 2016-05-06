@@ -2,7 +2,7 @@
 
 function chu_main_chart() { }
 
-chu_main_chart.showdetail = function (stock) {
+chu_main_chart.showdetail = function (stock,start) {
     var url = "/rest/rest/info/id/" + stock;
     $.ajaxSetup({ async: false });
     var t = $.getJSON(url, function (data) {
@@ -25,6 +25,9 @@ chu_main_chart.showdetail = function (stock) {
 
         $('#location').attr('href', '/web/company.html?location=' + location);
         $('#location').text(location);
+		
+		$('#trend').attr('href', '/web/single_statistics.html?sid='+stock+'&start='+start+'&big=500' + location);
+        $('#trend').text("排名走势");
     });
 
     //chu_main_chart.showfinance(stock);

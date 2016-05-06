@@ -56,6 +56,10 @@
       <Project>{66c0b860-1c77-4e05-b6bb-4343290d7f2e}</Project>
       <Name>BizData</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{8c100380-0414-43db-aa3b-32417c48c89f}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

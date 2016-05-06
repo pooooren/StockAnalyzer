@@ -37,7 +37,7 @@
                 var start = $("#start").val();
                 chu_main_chart.showchart(stock, big, type, start);
                 if (display_detail == 0) {
-                    chu_main_chart.showdetail(stock);
+                    chu_main_chart.showdetail(stock,start);
                     display_detail = 1;
                 }
             };//show
@@ -57,6 +57,7 @@
         <a id="industry1" target='_parent' href=""></a>
         <a id="industry2" target='_parent' href=""></a>
         <a id="location" target='_parent' href=""></a>
+		<a id="trend" target='_parent' href=""></a>
 		<div id="startdateradio">
 			<input type="radio" name="startdate" value="20130101" checked="checked"> 20130101</input>
 			<input type="radio" name="startdate" value="20140101" >20140101</input>

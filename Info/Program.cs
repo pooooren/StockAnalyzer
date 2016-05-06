@@ -1,5 +1,6 @@
 ﻿using big;
 using big.entity;
+using Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,10 +20,25 @@ namespace Info
             //InfoData id = BuildInfo(stock);
             //Console.WriteLine(id);
             //BizApi.InsertInfo(id);
+            
             IList<InfoData> list = GetList();
             foreach (InfoData id in list)
             {
-                BizApi.InsertInfo(id);
+                    BizApi.InsertInfo(id);
+            }
+
+            //检查退市的股票
+            List<InfoData> o_list = BizApi.QueryInfoAll();
+            foreach (InfoData id in o_list)
+            {
+                var search = list.Where(x => x.sid == id.sid).Select(x => x).ToList();
+
+                if (search.Count == 0)
+                {
+                    //退市了
+                    BizApi.DisableInfo(id);
+                    Console.WriteLine("{0} disabled", id.sid);
+                }
             }
         }
 
@@ -33,11 +49,11 @@ namespace Info
             //000001-003000
             WebClient client = new WebClient();
             IList<InfoData> sz = GetStock(client, 1000001, 1003000);
-          
+
             IList<InfoData> chuangye = GetStock(client, 1300000, 1301000);
             IList<InfoData> sh = GetStock(client, 1600000, 1605000);
-            sz=sz.Concat(chuangye).ToList();
-            sz=sz.Concat(sh).ToList();
+            sz = sz.Concat(chuangye).ToList();
+            sz = sz.Concat(sh).ToList();
             return sz;
 
         }
@@ -59,7 +75,7 @@ namespace Info
                     stock = string.Format("sh{0}", i.ToString().Substring(1));
                 }
 
-                InfoData id=BuildInfo(stock);
+                InfoData id = BuildInfo(stock);
                 if (id != null) list.Add(id);
             }
             return list;
@@ -68,22 +84,24 @@ namespace Info
         public static InfoData BuildInfo(string sid)
         {
             WebClient client = new WebClient();
-                byte[] page = client.DownloadData(string.Format("http://hq.sinajs.cn/list={0}", sid));
-                string content = System.Text.Encoding.GetEncoding("GBK").GetString(page);
-            InfoData id=null;
-                if (content.Length > 40)
-                {
-                    string name = content.Substring(content.IndexOf("\"") + 1, content.IndexOf(",") - content.IndexOf("\"")).Trim();
-  
+            //byte[] page = client.DownloadData(string.Format("http://hq.sinajs.cn/list={0}", sid));
+            byte[] page = BuildData(string.Format("http://hq.sinajs.cn/list={0}", sid));
+            string content = System.Text.Encoding.GetEncoding("GBK").GetString(page);
+            InfoData id = null;
+            if (content.Length > 40)
+            {
+                string name = content.Substring(content.IndexOf("\"") + 1, content.IndexOf(",") - content.IndexOf("\"")).Trim();
 
-                    id= new InfoData();
-                    id.sid = sid;
-                    id.name = name.EndsWith(",")?name.Substring(0,name.Length-1):name;
-                    id=BuildBasicInfo(id);
-                    id = BuildShare(id);
-                    Console.WriteLine("build complete: " + sid);
-                }
-                
+
+                id = new InfoData();
+                id.sid = sid;
+                id.name = name.EndsWith(",") ? name.Substring(0, name.Length - 1) : name;
+                id = BuildBasicInfo(id);
+                id = BuildShare(id);
+                Console.WriteLine("build complete: " + sid);
+            }
+
+
             return id;
         }
 
@@ -93,8 +111,9 @@ namespace Info
 
             WebClient client = new WebClient();
 
-            byte[] page = client.DownloadData(string.Format("http://stockpage.10jqka.com.cn/{0}/company/", BizCommon.ProcessStockId(id.sid)));
+            byte[] page = BuildData(string.Format("http://stockpage.10jqka.com.cn/{0}/company/", BizCommon.ProcessStockId(id.sid)));
 
+            
             string content = System.Text.Encoding.UTF8.GetString(page);
             //string content = "成交额：1.62 亿元";
 
@@ -127,11 +146,12 @@ namespace Info
         {
 
             Dictionary<string, string> dic = new Dictionary<string, string>();
-            WebClient client = new WebClient();
+
             // Stream data = client.OpenRead(string.Format("http://stockpage.10jqka.com.cn/{0}/company/", stock));
             // StreamReader reader = new StreamReader(data);
             //string s = reader.ReadToEnd();
-            byte[] page = client.DownloadData(string.Format("http://stockpage.10jqka.com.cn/{0}/holder/", BizCommon.ProcessStockId(id.sid)));
+            byte[] page = BuildData(string.Format("http://stockpage.10jqka.com.cn/{0}/holder/", BizCommon.ProcessStockId(id.sid)));
+                //client.DownloadData(string.Format("http://stockpage.10jqka.com.cn/{0}/holder/", BizCommon.ProcessStockId(id.sid)));
 
             string content = System.Text.Encoding.UTF8.GetString(page);
             //string content = "成交额：1.62 亿元";
@@ -145,25 +165,27 @@ namespace Info
                 MatchCollection matches = re.Matches(content);
                 values[i] = matches.Count > 0 ? matches[0].Groups[1].Value : "empty";
             }
-            for(int j=0;j<values.Length;j++) {
+            for (int j = 0; j < values.Length; j++)
+            {
                 values[j] = values[j] == "empty" ? "1" : values[j];
             }
-            decimal floatshare = (Decimal.Parse(values[0]) / Decimal.Parse(values[1]== "empty" ? "1" : values[1]) * 100);
-            id.totalshare = (Double)(Decimal.Parse(values[2]) / Decimal.Parse( values[3]) * 100);
+            decimal floatshare = (Decimal.Parse(values[0]) / Decimal.Parse(values[1] == "empty" ? "1" : values[1]) * 100);
+            id.totalshare = (Double)(Decimal.Parse(values[2]) / Decimal.Parse(values[3]) * 100);
             id.floatshare = (Double)floatshare;
             id.top10total = Decimal.Parse(values[1]);
             id.top10float = Decimal.Parse(values[3]);
             id.weight = GetWeight(floatshare);
-            int w =(int) Math.Round(id.weight * 10);
+            int w = (int)Math.Round(id.weight * 10);
             id.list = string.Format("{0},{1},{2}", 50 * w, 100 * w, 200 * w);
-            if (id.totalshare == 100f || id.floatshare == 100f)
-            {
-                id.valid = 0;
-            }
-            else
-            {
-                id.valid = 1;
-            }
+            //if (id.totalshare == 100f || id.floatshare == 100f)
+            //{
+            //    id.valid = 0;
+            //}
+            //else
+            //{
+            //    id.valid = 1;
+            //}
+            id.valid = 1;
             return id;
         }
 
@@ -179,6 +201,26 @@ namespace Info
             else return 1.5M;
         }
 
-
+        public static byte[] BuildData(string url)
+        {
+            byte[] page = null;
+            int retry = 0;
+            WebClient client = new WebClient();
+            while (retry < Constant.RETRY)
+            {
+                try {
+                    page = client.DownloadData(url);
+                    if (page == null)
+                        retry++;
+                    else
+                        break;
+                }
+                catch
+                {
+                    retry++;
+                }
+            }
+            return page;
+        }
     }
 }
