@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using big;
+using Common;
 
 namespace GenerateHtml
 {
@@ -20,7 +21,7 @@ namespace GenerateHtml
             else
             {
                 path = @"C:\work\web\";
-                time = BizCommon.ParseToString(DateTime.Now);
+                time = BizCommon.ParseToString(DateUtil.GetCeilingWorkDay(DateTime.Now));
             }
             Generate.GenerateAll(path, time);
         }

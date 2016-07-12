@@ -230,7 +230,7 @@ namespace Rest
             int b= string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
             int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
             DateTime endDate = string.IsNullOrEmpty(end) ? DateTime.Now : BizCommon.ParseToDate(end);
-            return BizApi.QueryAnalyzeDataByRange(sid, BizCommon.ParseToDate(start), endDate,b,m);
+            return BizApi.QueryAnalyzeDataByDate(sid, BizCommon.ParseToDate(start), endDate,b,m);
         }
         [WebGet(UriTemplate = "analyze1?level={level}&tag={tag}&old={old}&daybefore={daybefore}&industry={industry}&location={location}&type={type}", ResponseFormat = WebMessageFormat.Json)]
         [Description("type-CYB,ZB,SZ,SH")]

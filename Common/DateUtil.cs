@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Common
 {
@@ -180,6 +181,12 @@ namespace Common
             return dt;
         }
 
+
+        public static int GetDateDiff(DateTime date1,DateTime date2)
+        { 
+            TimeSpan span = date1.Subtract(date2);
+            return span.Days;
+        }
         private static DateTime GetStartTradeTime(DateTime d)
         {
             return new DateTime(d.Year, d.Month, d.Day, 9, 30, 0);
@@ -221,9 +228,75 @@ namespace Common
             return GetStartTradeTime(d.AddDays(1 - (int)d.DayOfWeek));
         }
 
+        /// <summary>
+        /// 判断是不是节假日,节假日返回true 
+        /// </summary>
+        /// <param name="date">日期格式：yyyy-MM-dd</param>
+        /// <returns></returns>
+        public static bool IsHolidayByDate(string date)
+        {
+            bool isHoliday = false;
+            System.Net.WebClient WebClientObj = new System.Net.WebClient();
+            System.Collections.Specialized.NameValueCollection PostVars = new System.Collections.Specialized.NameValueCollection();
+            PostVars.Add("d", date.Replace("-", ""));//参数
+            try
+            {
+                byte[] byRemoteInfo = WebClientObj.UploadValues(@"http://www.easybots.cn/api/holiday.php", "POST", PostVars);//请求地址,传参方式,参数集合
+                string sRemoteInfo = System.Text.Encoding.UTF8.GetString(byRemoteInfo);//获取返回值
 
+                string result = JObject.Parse(sRemoteInfo)[date.Replace("-", "")].ToString();
+                if (result == "0")
+                {
+                    isHoliday = false;
+                }
+                else if (result == "1" || result == "2")
+                {
+                    isHoliday = true;
+                }
+            }
+            catch
+            {
+                isHoliday = isWeekend(DateTime.Parse(date));
+            }
+            return isHoliday;
+        }
+        public static bool IsHolidayByDate(DateTime date)
+        {
+            return IsHolidayByDate(FormatDate(date));
+        }
+        public static DateTime GetCeilingWorkDay(DateTime d)
+        {
+            DateTime ret = new DateTime();
+            int i = 20;
+            while (i > 0)
+            {
+                if (IsHolidayByDate(d) || isWeekend(d))
+                {
+                    d = d.AddDays(-1);
+                }
+                else
+                {
+                    ret = d;
+                    break;
+                }
+                i--;
+            }
 
+            return ret;
+        }
+
+        public  static DateTime GetCeilingWorkDay(string d)
+        {
+            return GetCeilingWorkDay(DateTime.Parse(d));
+        }
+        public static string FormatDate(DateTime date)
+        {
+            return date.ToString("yyyy-MM-dd");
+        }
     }
+
+
+ 
 
     public struct DateUnit
     {
