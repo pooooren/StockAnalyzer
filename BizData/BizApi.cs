@@ -145,6 +145,14 @@ namespace big
             MySqlHelper.ExecuteNonQuery(sql2);
         }
 
+        public static void UpdateForAnalyzeDate(AnalyzeData ad)
+        {
+            
+            string sql2 = string.Format("update {0} set analyzedate='{1}' where sid='{2}'", EXTRACT_TABLE_STATUS, ad.enddate, ad.sid);
+            MySqlHelper.ExecuteNonQuery(sql2);
+        }
+
+
         #endregion
         #region rzrq
 
@@ -311,11 +319,11 @@ namespace big
         /// <returns></returns>
         public static List<AnalyzeData> QueryAnalyzeDataByMonth(string sid, int old = 6,int big=500,int month=12)
         {
-            return QueryAnalyzeDataByRange(sid, DateTime.Now.AddMonths(-old), DateTime.Now, big, month);
+            return QueryAnalyzeDataByDate(sid, DateTime.Now.AddMonths(-old), DateTime.Now, big, month);
         }
 
 
-        public static List<AnalyzeData> QueryAnalyzeDataByRange(string sid, DateTime start,DateTime end,int big,int month)
+        public static List<AnalyzeData> QueryAnalyzeDataByDate(string sid, DateTime start,DateTime end,int big,int month)
         {
 
             Dictionary<string, BasicData> basicList = QueryBasicDataDicByRange(sid, BizCommon.ParseToString(start),BizCommon.ParseToString(end), "d", big);
@@ -358,10 +366,12 @@ namespace big
                 }
                 else
                 {
+
+                    //int rank=DateUtil.GetDateDiff(DateTime.Now,BizCommon.ParseToDate(key))
                     newlist.Add(new AnalyzeData()
                     {
                         sid = basicList[key].sid,
-                        rank = -1000,
+                        rank = DateUtil.GetDateDiff(DateTime.Now, BizCommon.ParseToDate(key))>5? - 3000:0,
                         tag = basicList[key].tag,
                         month = month,
                         big = big
@@ -581,6 +591,9 @@ namespace big
                     "INSERT INTO {0}(sid,value,tag,name,firstlevel,secondlevel,enddate,rank,startdate,big,level,month)VALUES('{1}',{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}',{10},{11},{12})",
                             string.Format("{0}_{1}_{2}", ANALYZE, month, big), ad.sid, ad.value, tag, ad.name, ad.firstlevel, ad.secondlevel, BizCommon.ProcessSQLString(end), i, BizCommon.ProcessSQLString(start), ad.big, ad.level,month);
                     MySqlHelper.ExecuteNonQuery(sql);
+
+                //update analyze date
+                    UpdateForAnalyzeDate(ad);
                // }
             }
         }

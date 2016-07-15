@@ -55,18 +55,18 @@ namespace Rest
         }
 
         [WebGet(UriTemplate = "latestprice/id/{id}?tag={tag}", ResponseFormat = WebMessageFormat.Json)]
-        public string QueryLatestPrice(string id,string tag)
+        public string QueryLatestPrice(string id, string tag)
         {
-            
-            return BizApi.QueryLatestPrice(id,tag);
+
+            return BizApi.QueryLatestPrice(id, tag);
         }
 
         [WebGet(UriTemplate = "maxmin/id/{id}?range={range}", ResponseFormat = WebMessageFormat.Json)]
-        public string QueryMaxMin(string id,string range)
+        public string QueryMaxMin(string id, string range)
         {
             int r = 24;
             if (string.IsNullOrEmpty(range)) r = int.Parse(range);
-            return BizApi.QueryMaxMinPriceByRange(id,r);
+            return BizApi.QueryMaxMinPriceByRange(id, r);
         }
 
 
@@ -130,15 +130,15 @@ namespace Rest
             }
 
         }
-        
-        [WebGet(UriTemplate = "info/rzrq", ResponseFormat = WebMessageFormat.Json) ]
+
+        [WebGet(UriTemplate = "info/rzrq", ResponseFormat = WebMessageFormat.Json)]
         [Description("融资融券股票列表")]
         public List<InfoData> QueryInfoByRzrq()
         {
-            return BizApi.QueryInfoRzrq() ;
+            return BizApi.QueryInfoRzrq();
         }
 
-       
+
         [WebGet(UriTemplate = "info/industry1/{industry1}", ResponseFormat = WebMessageFormat.Json)]
         [Description("按照行业查询股票")]
         public List<InfoData> QueryInfoByIndutry(string industry1)
@@ -161,14 +161,14 @@ namespace Rest
 
         [Description("查询股票的排名,sid-股票代码,level-0,tag-时间戳,old-提前几个月的数据，目前是24-12-6-3,daybefore-提前几天开始计算，默认是０")]
         [WebGet(UriTemplate = "analyzevalue?sid={sid}&level={level}&tag={tag}&old={old}&daybefore={daybefore}", ResponseFormat = WebMessageFormat.Json)]
-        public string QueryAnalyze1(string sid,string level, string tag, string old,string daybefore)
+        public string QueryAnalyze1(string sid, string level, string tag, string old, string daybefore)
         {
             tag = BizCommon.ProcessWeekend(tag);
             int level_val = 1;
             DateTime now = DateTime.Now;
             int i_daybeofre = 0;
             if (string.IsNullOrEmpty(tag)) tag = BizCommon.ParseToString(now); else now = BizCommon.ParseToDate(tag);
-            if (string.IsNullOrEmpty(daybefore)) i_daybeofre =0; else i_daybeofre = int.Parse(daybefore);
+            if (string.IsNullOrEmpty(daybefore)) i_daybeofre = 0; else i_daybeofre = int.Parse(daybefore);
             if (!string.IsNullOrEmpty(level)) level_val = Int32.Parse(level);
             if (string.IsNullOrEmpty(old)) old = Constant.ANALYZE_TIME;
 
@@ -177,14 +177,14 @@ namespace Rest
             foreach (string v in list)
             {
 
-                int o =-Int32.Parse(v);
+                int o = -Int32.Parse(v);
 
 
                 DateTime end_date = now.AddDays(-i_daybeofre);
                 DateTime start_date = end_date.AddMonths(o);
 
 
-                vv+= BizApi.QueryAnalyzeDataValue(sid, tag, o, level_val)+",";
+                vv += BizApi.QueryAnalyzeDataValue(sid, tag, o, level_val) + ",";
             }
 
             return vv.Substring(0, vv.Length - 1); ;
@@ -194,9 +194,9 @@ namespace Rest
         {
             return Constant.ANALYZE_TIME;
         }
-        
+
         [WebGet(UriTemplate = "analyze?level={level}&tag={tag}&old={old}&daybefore={daybefore}&industry={industry}&location={location}&type={type}", ResponseFormat = WebMessageFormat.Json)]
-        public List<AnalyzeData> QueryAnalyze(string level, string tag, string old, string daybefore,string industry,string location,string type)
+        public List<AnalyzeData> QueryAnalyze(string level, string tag, string old, string daybefore, string industry, string location, string type)
         {
             tag = BizCommon.ProcessWeekend(tag);
             int level_val = 1;
@@ -212,25 +212,25 @@ namespace Rest
             DateTime start_date = end_date.AddMonths(o);
 
 
-            return BizApi.QueryAnalyzeData(tag, o, level_val, industry,location,type);
+            return BizApi.QueryAnalyzeData(tag, o, level_val, industry, location, type);
         }
 
 
         [WebGet(UriTemplate = "analyzebyId?sid={sid}&old={old}&big={big}&month={month}", ResponseFormat = WebMessageFormat.Json)]
-        public List<AnalyzeData> QueryAnalyzeById(string sid,string old,string big,string month)
+        public List<AnalyzeData> QueryAnalyzeById(string sid, string old, string big, string month)
         {
-            int o = string.IsNullOrEmpty(old) ? 6 :Int32.Parse(old);
+            int o = string.IsNullOrEmpty(old) ? 6 : Int32.Parse(old);
             int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
-            int b = string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
-            return BizApi.QueryAnalyzeDataByMonth(sid, o,b,m);
+            int b = string.IsNullOrEmpty(big) ? 500 : Int32.Parse(big);
+            return BizApi.QueryAnalyzeDataByMonth(sid, o, b, m);
         }
         [WebGet(UriTemplate = "analyzebyDate?sid={sid}&start={start}&end={end}&big={big}&month={month}", ResponseFormat = WebMessageFormat.Json)]
-        public List<AnalyzeData> QueryAnalyzeByDate(string sid, string start,string end,string big,string month)
+        public List<AnalyzeData> QueryAnalyzeByDate(string sid, string start, string end, string big, string month)
         {
-            int b= string.IsNullOrEmpty(big) ? 500 :Int32.Parse(big);
+            int b = string.IsNullOrEmpty(big) ? 500 : Int32.Parse(big);
             int m = string.IsNullOrEmpty(month) ? 12 : Int32.Parse(month);
             DateTime endDate = string.IsNullOrEmpty(end) ? DateTime.Now : BizCommon.ParseToDate(end);
-            return BizApi.QueryAnalyzeDataByDate(sid, BizCommon.ParseToDate(start), endDate,b,m);
+            return BizApi.QueryAnalyzeDataByDate(sid, BizCommon.ParseToDate(start), endDate, b, m);
         }
         [WebGet(UriTemplate = "analyze1?level={level}&tag={tag}&old={old}&daybefore={daybefore}&industry={industry}&location={location}&type={type}", ResponseFormat = WebMessageFormat.Json)]
         [Description("type-CYB,ZB,SZ,SH")]
@@ -241,11 +241,11 @@ namespace Rest
             int retry = 0;
             while (true && retry < 10)
             {
-                
+
                 DateTime end_date = now.AddDays((double)(-Int32.Parse(daybefore)));
                 DateTime start_date = end_date.AddMonths(-Int32.Parse(old));
 
-                list=BizApi.QueryAnalyzeData(tag, Int32.Parse(old), Int32.Parse(level), industry, location, type);
+                list = BizApi.QueryAnalyzeData(tag, Int32.Parse(old), Int32.Parse(level), industry, location, type);
                 if (list.Count == 0)
                 {
                     retry++;
@@ -290,6 +290,6 @@ namespace Rest
             return BizCommon.ParseToString(BizApi.QueryExtractLastUpdate(id));
         }
 
-        
+
     }
 }

@@ -19,3 +19,5 @@ http://my.oschina.net/u/209016/blog/79000
 
 
 update test.analyzedata set month=TIMESTAMPDIFF(MONTH,startdate,enddate);
+
+ALTER TABLE `test`.`sh600000` ADD INDEX `time` (`time` ASC);
