@@ -257,9 +257,9 @@ namespace UpdateBigDeal
                                     array[k].buymoney += Decimal.Multiply(price, (Decimal)share);
                                 }
 
-                                array[k].bigdetail = temp[bigs[k]];
+                                array[k].detail = temp[bigs[k]];
 
-                                //Console.WriteLine(array[k].bigdetail);
+                                //Console.WriteLine(array[k].detail);
                             }
                         }
                     }

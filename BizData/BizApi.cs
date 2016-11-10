@@ -112,10 +112,10 @@ namespace big
 
         #endregion
         #region update SQL
-        public static void AddBigDetail(string sid)
+        public static void Adddetail(string sid)
         {
-            //string sql2 = String.Format("ALTER TABLE {0} ADD COLUMN bigdetail VARCHAR(10000) NULL AFTER low", sid);
-            string sql2=String.Format("ALTER TABLE {0} CHANGE COLUMN bigdetail bigdetail TEXT NULL DEFAULT NULL",sid);
+            //string sql2 = String.Format("ALTER TABLE {0} ADD COLUMN detail VARCHAR(10000) NULL AFTER low", sid);
+            string sql2=String.Format("ALTER TABLE {0} CHANGE COLUMN detail detail TEXT NULL DEFAULT NULL",sid);
             UpdateSQL(sql2, sid);
         }
         public static void UpdateSQL(string sql, string sid)
@@ -131,13 +131,13 @@ namespace big
             int count = ds.Tables[0].Rows.Count;
             if (count > 0)
             {
-                string sql1 = String.Format("update  {0} set bigdetail='{1}' where time='{2}' and big={3} ", bd.sid, bd.bigdetail, bd.time, bd.big);
+                string sql1 = String.Format("update  {0} set detail='{1}' where time='{2}' and big={3} ", bd.sid, bd.detail, bd.time, bd.big);
                 MySqlHelper.ExecuteNonQuery(sql1);
             }
             else
             {
                 InsertBasicData(bd);
-                //string sql1 = String.Format("update  {0} set bigdetail='{1}' where time='{2}' and big={3} ", bd.sid, bd.bigdetail, bd.time, bd.big);
+                //string sql1 = String.Format("update  {0} set detail='{1}' where time='{2}' and big={3} ", bd.sid, bd.detail, bd.time, bd.big);
                 //MySqlHelper.ExecuteNonQuery(sql1);
             }
 
@@ -863,8 +863,8 @@ namespace big
             
             //CreateDataTable(sid);
             string sql = String.Format(
-                "INSERT INTO {0}(time,c_type,big,buyshare,buymoney,sellshare,sellmoney,totalshare,totalmoney,open,close,high,low,bigdetail)VALUES('{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},'{14}')",
-                        sid, bd.time, bd.c_type, bd.big, bd.buyshare, bd.buymoney, bd.sellshare, bd.sellmoney, bd.totalshare, bd.totalmoney, bd.open, bd.close, bd.high, bd.low,bd.bigdetail);
+                "INSERT INTO {0}(time,c_type,big,buyshare,buymoney,sellshare,sellmoney,totalshare,totalmoney,open,close,high,low,detail)VALUES('{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},'{14}')",
+                        sid, bd.time, bd.c_type, bd.big, bd.buyshare, bd.buymoney, bd.sellshare, bd.sellmoney, bd.totalshare, bd.totalmoney, bd.open, bd.close, bd.high, bd.low,bd.detail);
             MySqlHelper.ExecuteNonQuery(sql);
             UpdateExtractStatus(bd);
         }

@@ -71,12 +71,12 @@ namespace StockList
             //{
             //    try
             //    {
-            //        BizApi.AddBigDetail(id.sid);
-            //        Console.WriteLine(id.sid + " succeed to add bigdetail");
+            //        BizApi.Adddetail(id.sid);
+            //        Console.WriteLine(id.sid + " succeed to add detail");
             //    }
             //    catch
             //    {
-            //        Console.WriteLine(id.sid + " already to add bigdetail--------");
+            //        Console.WriteLine(id.sid + " already to add detail--------");
             //    }
             //}
 

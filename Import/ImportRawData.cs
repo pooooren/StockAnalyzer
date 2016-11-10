@@ -326,10 +326,10 @@ namespace Import
                                 }
                                 if (Common.Constant.DETAIL)
                                 {
-                                    array[k].bigdetail = temp[bigs[k]];
+                                    array[k].detail = temp[bigs[k]];
                                 }
 
-                                //Console.WriteLine(array[k].bigdetail);
+                                //Console.WriteLine(array[k].detail);
                             }
                         }
                     }
