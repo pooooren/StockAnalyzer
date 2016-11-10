@@ -16,11 +16,11 @@ namespace Info
     {
         public static void Main(string[] args)
         {
-            //string stock = "sz300500";
-            //InfoData id = BuildInfo(stock);
-            //Console.WriteLine(id);
-            //BizApi.InsertInfo(id);
-            
+            //string stock = "sz000002";
+            //InfoData id1 = BuildInfo(stock);
+            //Console.WriteLine(id1);
+            //BizApi.InsertInfo(id1);
+
             IList<InfoData> list = GetList();
             foreach (InfoData id in list)
             {
@@ -76,8 +76,12 @@ namespace Info
                 }
 
                 InfoData id = BuildInfo(stock);
-                if (id != null) list.Add(id);
-            }
+          
+                if (id != null) {
+                    list.Add(id);
+                    BizApi.InsertInfo(id);
+                }
+                }
             return list;
         }
 

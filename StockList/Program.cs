@@ -22,8 +22,8 @@ namespace StockList
 
             //List<AnalyzeData> list = BizApi.QueryAnalyzeDataByDate("sh601899", new DateTime(2015, 12, 12), DateTime.Now,500,12);
             //Console.WriteLine(list.Count);
-            List<AnalyzeData> list = BizApi.QueryAnalyzeDataByRange("sz002254", new DateTime(2016,1,1),DateTime.Now, 500, 12);
-            Console.WriteLine(list.Count);
+            //List<AnalyzeData> list = BizApi.QueryAnalyzeDataByRange("sz002254", new DateTime(2016,1,1),DateTime.Now, 500, 12);
+            //Console.WriteLine(list.Count);
             //BizApi.ComputeAll(1, new DateTime(2015, 1, 1), DateTime.Now);
             //string sql = "select * from basicinfo";
             //DataSet ds = MySqlHelper.GetDataSet(sql);

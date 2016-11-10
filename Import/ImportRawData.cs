@@ -17,6 +17,7 @@ namespace Import
 
     public class ImportRawData
     {
+        public static object Contstant { get; private set; }
 
         public static void ImportFileByReader(string sid, string date, TextReader reader)
         {
@@ -296,32 +297,37 @@ namespace Import
                                 if (type_str == "S")
                                 {
                                     //string code = "-" + MyBase64.CompressNumber(long.Parse(p(share) + p1(time_str) + p2(current, open)));
-                                    if (bigs[k] > 0)
-                                    {
-                                        code = p(share) + p1(time_str) + RateToOpen(current, open) + RateToBefore(decimal.Parse(change_str), current);
-                                        code = MyBase64.CompressNumber(long.Parse(code));
-                                        code = "-" + code;
-                                        temp[bigs[k]] += code;
+                                    if (Common.Constant.DETAIL) { if (bigs[k] > 0)
+                                        {
+                                            code = p(share) + p1(time_str) + RateToOpen(current, open) + RateToBefore(decimal.Parse(change_str), current);
+                                            code = MyBase64.CompressNumber(long.Parse(code));
+                                            code = "-" + code;
+                                            temp[bigs[k]] += code;
+                                        }
                                     }
                                     array[k].sellshare += share;
                                     array[k].sellmoney += Decimal.Multiply(price, (Decimal)share);
                                 }
                                 if (type_str == "B")
                                 {
-                                    if (bigs[k] > 0)
-                                    {
-                                        //string code = "-" + MyBase64.CompressNumber(long.Parse(p(share) + p1(time_str) + p2(current, open)));
-                                        code = p(share) + p1(time_str) + RateToOpen(current, open) + RateToBefore(decimal.Parse(change_str), current);
-                                        //Console.WriteLine(code);
-                                        code = MyBase64.CompressNumber(long.Parse(code));
-                                        code = "+" + code;
-                                        temp[bigs[k]] += code;
+                                    if(Common.Constant.DETAIL) {
+                                        if (bigs[k] > 0)
+                                        {
+                                            //string code = "-" + MyBase64.CompressNumber(long.Parse(p(share) + p1(time_str) + p2(current, open)));
+                                            code = p(share) + p1(time_str) + RateToOpen(current, open) + RateToBefore(decimal.Parse(change_str), current);
+                                            //Console.WriteLine(code);
+                                            code = MyBase64.CompressNumber(long.Parse(code));
+                                            code = "+" + code;
+                                            temp[bigs[k]] += code;
+                                        }
                                     }
                                     array[k].buyshare += share;
                                     array[k].buymoney += Decimal.Multiply(price, (Decimal)share);
                                 }
-
-                                array[k].bigdetail = temp[bigs[k]];
+                                if (Common.Constant.DETAIL)
+                                {
+                                    array[k].bigdetail = temp[bigs[k]];
+                                }
 
                                 //Console.WriteLine(array[k].bigdetail);
                             }

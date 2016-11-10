@@ -22,16 +22,18 @@ namespace UpdateBigDeal
 
             //DownloadData("sh600000", start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"));
 
-            SplitAnalyzeData();
-            //List<InfoData> list = BizApi.QueryInfoAll();
-            ////List<InfoData> list = new List<InfoData>() { BizApi.QueryInfoById("sh600157") };
-            //foreach (InfoData id in list)
-            //{
-            //    DownloadData(id.sid, start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"));
-            //    Console.WriteLine(id.sid + " done=====================================");
-            //}
+            //SplitAnalyzeData();
+            List<InfoData> list = BizApi.QueryInfoAll();
+            //List<InfoData> list = new List<InfoData>() { BizApi.QueryInfoById("sh600157") };
+            foreach (InfoData id in list)
+            {
+                string delete_sql = String.Format(
+                    "ALTER TABLE {0} ADD COLUMN `sellmoney` DECIMAL NULL COMMENT '' AFTER `sellshare`,ADD COLUMN `buymoney` DECIMAL NULL COMMENT '' AFTER `buyshare`; ", id.sid);
+                MySqlHelper.ExecuteNonQuery(delete_sql);
+                Console.WriteLine(id.sid);
+            }
 
-            Console.WriteLine();
+            
         }
 
         public static string DownloadData(string stock, string startDate, string endDate)
