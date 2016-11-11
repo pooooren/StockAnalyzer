@@ -1386,6 +1386,25 @@ namespace big
             //DataTable dt = ds.Tables[0];
             return ds.Tables[0].Rows[0]["low"].ToString() + "-" + ds.Tables[0].Rows[0]["high"].ToString();
         }
+
+        public static string QueryLowestRateByRange (string sid, int months)
+        {
+
+            DateTime now = DateTime.Now;
+            DateTime start = now.AddMonths(-months);
+            string sql = string.Format("select  max(high) as high,min(low) as low from {0} where time>='{1}' and time <='{2}'", sid, BizCommon.ProcessSQLString(start), BizCommon.ProcessSQLString(now));
+            string price = QueryLatestPrice(sid, BizCommon.ParseToString(now));
+            DataSet ds = MySqlHelper.GetDataSet(sql);
+
+            string high = ds.Tables[0].Rows[0]["high"].ToString();
+            string low = ds.Tables[0].Rows[0]["low"].ToString();
+            if (!price.Equals("--"))
+                Console.WriteLine("{0},{1},{2},{3}，{4}", sid, high, low, Math.Round((double.Parse(price) - double.Parse(low)) / double.Parse(low), 3), Math.Round((double.Parse(high) - double.Parse(price)) / (double.Parse(price) - double.Parse(low)), 3));
+            //DataTable dt = ds.Tables[0];
+            return ds.Tables[0].Rows[0]["low"].ToString() + "-" + ds.Tables[0].Rows[0]["high"].ToString();
+
+
+        }
         #endregion
     }
 
